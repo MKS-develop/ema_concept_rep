@@ -4,6 +4,7 @@ import 'firebase/storage';
 import 'firebase/firestore';
 import 'firebase/auth';
 import moment from 'moment';
+import { getAllByPlaceholderText } from '@testing-library/dom';
 
 var firebaseConfig = {}
 
@@ -17,6 +18,9 @@ firebaseConfig = {
   measurementId: "G-1NTTQ4W2TE"
 };
 console.log('Estamos en Desarrollo')
+
+//Estoy manejando la funcionalidad de autenticación y registro del usuario en este archivo, para así poder acceder a la bd, el storage
+//y la propia información del usuario desde todos lados
 
 class Firebase {
     constructor(){
@@ -36,17 +40,19 @@ class Firebase {
         await this.auth.createUserWithEmailAndPassword(email, password)
     }
 
+    //Una vez se registro el usuario se crea el documento en la colección
     addUser(email, userInfo, url) {
 		  if(!this.auth.currentUser) {
-		  	return alert('Not authorized')
+		  	return alert('No autorizado')
 		  }
-        
+      //Esto es solo para el codigo del aliado, lo quitas si quieres
       let aliados = []
       this.db.collection('Aliados').get().then(data=>{  
         data.forEach(tipo=>{
           aliados.push(tipo.id)
         })
       })
+      //Para la información del usuario estoy usando un objeto que relleno en el registro
 		  return this.db.collection("Aliados").doc(this.auth.currentUser.uid).set({
         aliadoId: this.auth.currentUser.uid,
         nombre: userInfo.nombre,

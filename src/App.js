@@ -51,12 +51,15 @@ function App() {
       <Router>
         <div className="container-fluid">
           <div className="row">
+            {/* Se hace la validación para que no se muestre el navbar o el sidebar cuando este en el login
+            o en el registro */}
           {url.includes("/login") || url.includes("/register") || !user ? <div></div> : <Sidebar/>}
             <main className={url.includes("/login") || url.includes("/register") || !user ? "main-content col-12" : "main-content col-lg-10 col-md-9 col-sm-12 p-0 offset-lg-2 offset-md-3"}>
               {url.includes("/login") || url.includes("/register") || !user ? <div></div> : <Navbar/>}
               <Switch>
                 <Route path="/login" exact component={Login}/>
                 <Route path="/register" exact component={Register}/>
+                {/* PrivateRoute es la seguridad de las rutas para que no entre cualquiera sin iniciar sesión */}
                 <PrivateRoute exact path="/register/doctor_register" component={DoctorSignUp} />
                 <PrivateRoute exact path="/" component={Home} />
                 <PrivateRoute exact path="/profile" component={Profile} />
