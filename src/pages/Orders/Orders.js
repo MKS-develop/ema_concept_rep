@@ -1,23 +1,27 @@
 import React, {useState, useEffect} from 'react'
 import firebase from '../../firebase/config'
 import {useHistory} from 'react-router-dom';
+import moment from 'moment';
 
 
 function Orders() {
 
     const history = useHistory()
-    const [nameValue, setNameValue] = useState(null);
-    const [nroValue, setNroValue] = useState(null);
+    const [nameValue, setNameValue] = useState(null)
+    const [nroValue, setNroValue] = useState(null)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [itemsPerPage, setItemsPerPage] = useState(5)
+    const [totalItemCount, setTotalItemCount] = useState(0)
     let statusValues = ["Por confirmar", "Confirmada"]
     const [statusValue, setStatusValue] = useState(null);
     const [orders, setOrders] = useState([])
     const [user, setUser] = useState({})
     const [order, setOrder] = useState({})
+    const [orderSell, setOrderSell] = useState({})
 
     const getOrders = async(aliadoId) =>{
-      // console.log(statusValue)
       let tipos = [];
-      
+
       const reference = firebase.db.collection('Ordenes').where("aliadoId", "==", aliadoId)
       const nameFilter = nameValue ? reference.where("user", "==", nameValue) : reference
       const nroFilter = nroValue ? nameFilter.where("oid", "==", nroValue) : nameFilter
@@ -27,8 +31,33 @@ function Orders() {
         val.docs.forEach(item=>{
           tipos.push(item.data())
         })
-        setOrders(tipos)
+        setOrders(tipos.sort((a, b) => b.createdOn - a.createdOn))
+        setTotalItemCount(tipos.length)
       })
+    }
+
+    const handleClick = async(order) =>{
+      let item = {}
+      if(order.tipoOrden === "Servicio" || order.tipoOrden === "Videoconsulta" || order.localidadId === undefined ){
+        let reference = (await firebase.db.collection("Ordenes").doc(order.oid).collection("Items").get()).docs
+        item = reference[0].data()
+        try {
+          firebase.db.collection("Localidades").doc(order.localidadId).collection("Servicios").doc(item.servicioid).get().then((doc)=>{
+            setOrderSell(doc.data())
+          })
+        }catch(e){
+          console.log(e)
+        }
+      }
+      // else{
+      //   try {
+      //     firebase.db.collection("Productos").doc(order.productoId).get().then((doc)=>{
+      //       setOrderSell(doc.data())
+      //     })
+      //   }catch(e){
+      //     console.log(e)
+      //   }
+      // }
     }
 
     useEffect(() => {
@@ -45,7 +74,7 @@ function Orders() {
           ? 
           <div>
 
-              <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+              <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                   <div className="row align-items-center">
                     <div className="col">
@@ -104,8 +133,9 @@ function Orders() {
                     <div className="orders-container">
                       {
                         orders.length > 0 ? orders.map(order=>{
+                          let oc = moment(order.createdOn.toDate()).format("ddd, MMM D YYYY")
                           return(
-                            <div onClick={() => setOrder(order)} key={order.oid} className="mb-2 row order-child">
+                            <div onClick={() => {setOrder(order); handleClick(order)}} key={order.oid} className="mb-2 row order-child">
                               <div className="col-md-2 color-primary">
                                 <p className="mb-0">{order.user}</p>
                               </div>
@@ -116,7 +146,7 @@ function Orders() {
                                 <p className="mb-0">{order.tipoOrden}</p>
                               </div>
                               <div className="col-md-2 ">
-                                <p className="mb-0">{order.fecha}</p>
+                                <p className="mb-0">{oc}</p>
                               </div>
                               <div className={order.status === "Confirmada" 
                               ? "col-md-2 color-success" : order.status === "Por Confirmar" ||  order.status === "Por confirmar" ? "col-md-2 color-secondary" 
@@ -138,7 +168,7 @@ function Orders() {
             
             : <div>
 
-              <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+              <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                   <div className="row align-items-center">
                     <div className="col">
@@ -153,47 +183,112 @@ function Orders() {
                 </div>
               </div>
               <h3 className="mb-5">Detalle de la órden</h3>
-              <div className="row">
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Nombre del cliente</p>
-                  <p>{order.user}</p>
+              <div className="row no-gutters">
+                <div className="row col-lg-8">
+                  <div className="col-lg-4">
+                    <p className="mb-0 bold color-primary">Nombre del cliente</p>
+                    <p>{order.user}</p>
+                  </div>
+                  <div className="col-lg-4">
+                    <p className="mb-0 bold color-primary">Status</p>
+                    <p>{order.status}</p>
+                  </div>
+                  <div className="col-lg-4">
+                    <p className="mb-0 bold color-primary">Fecha</p>
+                    <p>{order.fecha}</p>
+                  </div>
+                  <div className="col-lg-4">
+                    <p className="mb-0 bold color-primary">Monto</p>
+                    <p>S/{order.precio}</p>
+                  </div>
+                  <div className="col-lg-4">
+                    <p className="mb-0 bold color-primary">Nro. de órden</p>
+                    <p>{order.oid}</p>
+                  </div>
+                  <div className="col-lg-4">
+                    <p className="mb-0 bold color-primary">Tipo de órden</p>
+                    <p>{order.tipoOrden}</p>
+                  </div>
                 </div>
                 <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Status</p>
-                  <p>{order.status}</p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Fecha</p>
-                  <p>{order.fecha}</p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Monto</p>
-                  <p>S/{order.precio}</p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Nro. de órden</p>
-                  <p>{order.oid}</p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Tipo de órden</p>
-                  <p>{order.tipoOrden}</p>
+                { order.tipoOrden === "Servicio" || order.tipoOrden === "Videoconsulta" || orderSell !== undefined ? 
+                  <div className="card"> 
+                    <div className="card-header-img-width">
+                      <img src={orderSell.urlImagen} alt=""/>
+                    </div>
+                    <div className="px-4">
+                      <div className="card-claim-box">
+                        <p className="card-claim-title">{orderSell.categoria}</p>
+                        <p className="card-claim-text">{orderSell.titulo}</p>
+                      </div>
+                      <div className="card-claim-box">
+                        <p className="card-claim-title">Precio del servicio</p>
+                        <p className="card-claim-text">S/{orderSell.precio}</p>
+                      </div>
+                      <div className="card-claim-box">
+                        <p className="card-claim-title">Descripción del servicio</p>
+                        <p className="card-claim-text">{orderSell.descripcion}</p>
+                      </div>
+                      <div className="card-claim-box">
+                        <p className="card-claim-title">Condiciones del servicio</p>
+                        <p className="card-claim-text">{orderSell.condiciones}</p>
+                      </div>
+                    </div>
+                  </div> 
+                  :  
+                  // <div className="card">
+                  //     <div className="card-header-img">
+                  //       <img src={orderSell.urlImagen} alt=""/>
+                  //     </div>
+                  //     <div className="px-4">
+                  //       <div className="card-claim-box">
+                  //         <p className="card-claim-text">{orderSell.titulo}</p>
+                  //       </div>
+                  //       <div className="card-claim-box">
+                  //         <p className="card-claim-title">Precio del producto</p>
+                  //         <p className="card-claim-text">S/{orderSell.precio}</p>
+                  //       </div>
+                  //       <div className="card-claim-box">
+                  //         <p className="card-claim-title">Cantidad del producto</p>
+                  //         <p className="card-claim-text">{orderSell.cantidad}</p>
+                  //       </div>
+                  //     </div>
+                  //   </div>
+                  <div></div>
+                  }
                 </div>
               </div>
-              <div className="row">
+              <div className="row mb-5">
                 <div className="col-lg-5">
                   <button onClick={()=>{
                     history.push({
-                      pathname: "/orders/client", 
+                      pathname: "/order/client", 
                       state: { clienteId: order.uid }
                     })
                   }} className="btn btn-primary btn-block">Ver la información del cliente</button>
                 </div>
+                { order.status === "Por confirmar" || order.status === "Por Confirmar" ? <div className="col-lg-5">
+                  <button onClick={()=>{ updateOrder() }} className="btn btn-primary btn-block">Confirmar orden</button>
+                </div> : <div></div> }
               </div>
 
             </div>}
 
           </div>
     )
+
+    async function updateOrder(){
+      try {
+        await firebase.db.collection("Ordenes").doc(order.oid).update({
+          status: "Confirmada",
+          statusCita: "Confirmada"
+        })
+        window.location.href = "/orders"
+
+      }catch (e){
+        console.log(e)
+      }
+    }
 
 }
 

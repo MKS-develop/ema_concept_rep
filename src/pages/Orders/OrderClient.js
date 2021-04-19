@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react'
 import {useLocation, Link} from 'react-router-dom';
-import firebase from '../firebase/config'
+import firebase from '../../firebase/config'
 
-function Client() {
+function OrderClient() {
 
     const data = useLocation()
     const [user, setUser] = useState({})
@@ -24,7 +24,7 @@ function Client() {
 
     useEffect(() => {
         if(data.state === undefined || data.state === null){
-          window.location.href = "/agenda"
+          window.location.href = "/orders"
         }
         firebase.getCurrentUser().then((val)=>{
           setUser(val)
@@ -39,7 +39,7 @@ function Client() {
           <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
             <div className="row align-items-center">
               <div className="col">
-                <p className="page-title bold"><Link className="page-title light" to="/agenda">Agenda</Link> {'>'} Cliente</p>
+                <Link to="/orders" className="page-title"><i className="material-icons">arrow_back</i> Regresar</Link>
               </div>
             </div>
           </div>
@@ -92,4 +92,4 @@ function Client() {
     )
 }
 
-export default Client
+export default OrderClient

@@ -2,6 +2,8 @@ import React, {useState, useEffect} from 'react'
 import firebase from '../../firebase/config'
 import {Link, useHistory} from 'react-router-dom';
 import moment from 'moment';
+import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
 
 function Promotions() {
 
@@ -11,6 +13,7 @@ function Promotions() {
     const [promotions, setPromotions] = useState([])
     const [user, setUser] = useState({})
     const [promotion, setpromotion] = useState({})
+    const [fechaPromo, setFechaPromo] = useState(null)
     const [prodInfo, setProdInfo] = useState({
       titulo: "",
       descripcion: "",
@@ -95,7 +98,7 @@ function Promotions() {
     return (
         <div className="main-content-container container-fluid px-4">
 
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
                   <div className="col">
@@ -167,7 +170,7 @@ function Promotions() {
                       <div className="card-footer">
                         <div className="row">
                           <div className="col-md-6 col-sm-12">
-                            <button onClick={deletePromotion} className="btn btn-danger">Eliminar promoción</button>
+                            <button onClick={deletePromotion} className="btn btn-outline-danger">Eliminar promoción</button>
                           </div>
                           <div className="col-md-6 col-sm-12">
                             <button onClick={()=>{setUpdate(true); }} className="btn btn-primary">Editar promoción</button>
@@ -227,6 +230,7 @@ function Promotions() {
                       </div>
                     </form>
                     : <form onSubmit={e => e.preventDefault() && false }>
+                      <MuiPickersUtilsProvider utils={MomentUtils}>
                       <div className="card">
                         <div className="card-header text-center">
                           <h4>Subir promoción</h4>
@@ -270,6 +274,19 @@ function Promotions() {
                               <input type="text" onChange={(e)=>{setProdInfo({...prodInfo, peso: e.target.value})}} placeholder="Peso del producto" className="form-control"/>
                             </div>
                           </div>
+                          <div className="form-group spe-input">
+                            <DatePicker
+                              format="ddd, MMM D YYYY"
+                              placeholder="Hasta de la promoción"
+                              minDate={moment().toDate()}
+                              label=""
+                              okLabel="Listo"
+                              cancelLabel="Cancelar"
+                              value={fechaPromo}
+                              onChange={setFechaPromo}
+                              animateYearScrolling
+                            />
+                          </div>
                           <div className={`${ typoPromoStatus.info ? "d-none" : "" } form-group`}>
                             <input type="text" onChange={(e)=>{setProdInfo({...prodInfo, precio: e.target.value})}} placeholder="Precio de la promoción" className="form-control"/>
                           </div>
@@ -284,6 +301,7 @@ function Promotions() {
                           <button onClick={()=>{uploadPromotion()}} className="btn btn-primary btn-block">{btnMessage}</button>
                         </div>
                       </div>
+                      </MuiPickersUtilsProvider>
                     </form>}
                 </div>
             </div>

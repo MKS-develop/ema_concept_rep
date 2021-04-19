@@ -38,6 +38,12 @@ function Sidebar() {
                 </NavLink>
               </li>
               <li className="nav-item">
+                <NavLink className="nav-link" exact to="/adoption" activeClassName="active">
+                  <i className="material-icons">pets</i>
+                  <span>Adopción y apadrinamiento</span>
+                </NavLink>
+              </li>
+              <li className="nav-item">
                 <NavLink className="nav-link" exact to="/clients" activeClassName="active">
                   <i className="material-icons">people</i>
                   <span>Clientes</span>

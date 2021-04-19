@@ -9,7 +9,7 @@ function Clients() {
     const [nameValue, setNameValue] = useState(null);
     const [nroValue, setNroValue] = useState(null);
     const [clients, setClients] = useState([])
-    const [dueños, setDueños] = useState([])
+    const [clientsSearch, setClientsSearch] = useState([])
     const [orders, setOrders] = useState([])
     const [user, setUser] = useState({})
     const [client, setClient] = useState({})
@@ -17,11 +17,13 @@ function Clients() {
     const getOrders = async(aliadoId) =>{
         let tipos = [];
         await firebase.db.collection('Ordenes').where("aliadoId", "==", aliadoId).get().then(val => {
+          if(val.docs.length > 0){
             val.docs.forEach(item=>{
-                tipos.push(item.data())
+                tipos.push(item.data().uid)
             })
             setOrders(tipos)
             getDueños(tipos)
+          }
         })
     }
 
@@ -29,25 +31,49 @@ function Clients() {
         let tipos = [];
         await firebase.db.collection('Dueños').get().then(val => {
           val.docs.forEach(item=>{
-            tipos.push(item.data())
+            tipos.push(item.data().uid)
           })
-          setDueños(tipos)
           getClients(tipos, orders)
         })
     }
         
 
     const getClients = (dueños, orders) =>{
-        for(let i = 0; i < dueños.length; i++){
-            if(dueños[i].user === orders[i].user){
-                setClients([...clients, dueños[i]])
-                console.log(dueños[i])
-                console.log(i)
-            }else{
-                i++
-            }
+        let tipos = []
+        let ids = []
+        for(let i = 0; i < orders.length; i++){
+            let a = dueños.indexOf(orders[i])
+            tipos.push(a)
         }
+        let tipos2 = Array.from(new Set(tipos))
+        for(let i = 0; i < tipos2.length; i++){
+            let a = dueños[tipos2[i]]
+            ids.push(a)
+        }
+        getDueños2(ids)
+    }
 
+    const getDueños2 = async(ids) =>{
+        let tipos = [];
+        for(let i = 0; i < ids.length; i++){
+            await firebase.db.collection('Dueños').doc(ids[i]).get().then(val => {              
+                tipos.push(val.data())
+                console.log(val.data())
+            })
+        }
+        console.log(tipos)
+        setClients(tipos)
+    }
+    
+    const getDueños3 = async(val) =>{
+      let tipos = []
+      for(let i = 0; i < clients.length; i++){
+        let u = clients[i].user.toLowerCase()
+        if(u.includes(val.toLowerCase())){
+          tipos.push(clients[i])
+        }
+      }
+      setClientsSearch(tipos)
     }
 
     useEffect(() => {
@@ -60,11 +86,11 @@ function Clients() {
     return (
 
         <div className="main-content-container container-fluid px-4">
-          {client.oid === undefined
+          {client.uid === undefined
           ? 
           <div>
 
-              <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+              <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                   <div className="row align-items-center">
                     <div className="col">
@@ -83,7 +109,7 @@ function Clients() {
                   <input type="text" placeholder="Nombre del cliente" className="form-control" onChange={(e)=>{setNameValue(e.target.value)}}/>
                 </div>
                 <div className="ml-3 form-group">
-                  <button className="btn btn-primary" onClick={()=>{getClients(user.aliadoId)}}>Buscar <i className="material-icons">search</i></button>
+                  <button className="btn btn-primary" onClick={()=>{getDueños3(nameValue)}}>Buscar <i className="material-icons">search</i></button>
                 </div>
               </div>
               <div className="row">
@@ -97,15 +123,28 @@ function Clients() {
                   <div className="col-lg-12 col-md-12 col-sm-12">
                     <div className="orders-container">
                       {
-                        clients.length > 0 ? clients.map(client=>{
+                        clientsSearch.length > 0 && nameValue ? 
+                        clientsSearch.length > 0 ? clientsSearch.map(client=>{
                           return(
-                            <div onClick={() => setClient(client)} key={client.uid} className="mb-2 row client-child">
+                            <div onClick={() => setClient(client)} key={client.uid} className="mb-4 row client-child align-items-center">
+                              <img className="client-avatar-preview rounded-circle mr-2" src={client.url ?? "cargando"} alt="User Avatar"/>
                               <div className="col-md-2 color-primary">
                                 <p className="mb-0">{client.user}</p>
                               </div>
                             </div>
                           )
-                        }) : <div className="text-center"><p>No hay órdenes</p></div>
+                        }) : <div className="text-center"><p>No hay clientes</p></div>
+                        :
+                        clients.length > 0 ? clients.map(client=>{
+                          return(
+                            <div onClick={() => setClient(client)} key={client.uid} className="mb-4 row client-child align-items-center">
+                              <img className="client-avatar-preview rounded-circle mr-2" src={client.url ?? "cargando"} alt="User Avatar"/>
+                              <div className="col-md-2 color-primary">
+                                <p className="mb-0">{client.user}</p>
+                              </div>
+                            </div>
+                          )
+                        }) : <div className="text-center"><p>No hay clientes</p></div>
                       }
                     </div>
                   </div>
@@ -115,7 +154,7 @@ function Clients() {
             
             : <div>
 
-              <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+              <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                   <div className="row align-items-center">
                     <div className="col">
@@ -129,41 +168,27 @@ function Clients() {
                   </div>
                 </div>
               </div>
-              <h3 className="mb-5">Detalle de la órden</h3>
+              <h3 className="mb-5">Cliente</h3>
               <div className="row">
                 <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Nombre del cliente</p>
-                  <p>{client.user}</p>
+                    <p className="mb-0 bold color-primary">Nombre del cliente</p>
+                    <p>{client.nombre} {client.apellido}</p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Status</p>
-                  <p>{client.status}</p>
+                    <p className="mb-0 bold color-primary">Sexo</p>
+                    <p>{client.genero}</p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Fecha</p>
-                  <p>{client.fecha}</p>
+                    <p className="mb-0 bold color-primary">Dirección</p>
+                    <p>{client.direccion}</p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Monto</p>
-                  <p>S/{client.precio}</p>
+                    <p className="mb-0 bold color-primary">Teléfono</p>
+                    <p>{client.telefono}</p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Nro. de órden</p>
-                  <p>{client.oid}</p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Tipo de órden</p>
-                  <p>{client.tipoOrden}</p>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-lg-5">
-                  <button onClick={()=>{
-                    history.push({
-                      pathname: "/clients/client", 
-                      state: { clienteId: client.uid }
-                    })
-                  }} className="btn btn-primary btn-block">Ver la información del cliente</button>
+                    <p className="mb-0 bold color-primary">Email</p>
+                    <p>{client.email}</p>
                 </div>
               </div>
 

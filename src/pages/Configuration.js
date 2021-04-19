@@ -13,7 +13,7 @@ function Configuration() {
     return (
         <div className="main-content-container container-fluid px-4">
 
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
                   <div className="col">
@@ -85,6 +85,20 @@ function Configuration() {
                   </div>
                 </Link>
               </div>
+              {user.role === "Administrador" ? <div className="col-md-4 col-sm-12 mb-4">
+                <Link className="card" to="/employes">
+                  <div className="card-body">
+                    <div className="row align-items-center">
+                      <div className="col-md-4 col-sm-12 card-config-img">
+                        <img src="../images/icons/cuenta.svg" alt="" width="60" height="60"/>
+                      </div>
+                      <div className="col-md-8 col-sm-12">
+                        <p className="card-config-p mb-0">Administrador de usuarios</p>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div> : <div></div>}
               {user.tipoAliado === "Médico" ?
               <div className="col-md-4 col-sm-12 mb-4">
                 <Link className="card" to="/configuration/specialitys">

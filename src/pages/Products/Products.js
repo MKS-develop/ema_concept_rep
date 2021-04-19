@@ -112,11 +112,11 @@ function Products() {
     return (
         <div className="main-content-container container-fluid px-4">
 
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
                   <div className="col">
-                    <p className="page-title"><Link className="color-white" to="/configuration">Configuración</Link> {'>'} Productos</p>
+                    <p className="page-title bold"><Link className="page-title light" to="/configuration">Configuración</Link> {'>'} Productos</p>
                   </div>
                 </div>
               </div>
@@ -160,7 +160,8 @@ function Products() {
                     </div>
                 </div>
                 <div className="col-lg-5 col-md-5 col-sm-12">
-                    { product.titulo != null  && !update ? <div className="card">
+                    { product.titulo != null  && !update ? 
+                    <div className="card">
                       <div className="card-header-img">
                         <img src={product.urlImagen} alt=""/>
                       </div>
@@ -171,14 +172,14 @@ function Products() {
                         <div className="card-claim-box">
                           <p className="card-claim-text">{product.titulo}</p>
                         </div>
-                        <div className="card-claim-box">
+                        {/* <div className="card-claim-box">
                           <p className="card-claim-title">Tipo de mascota</p>
                           <p className="card-claim-text">{product.tipoMascota}</p>
                         </div>
                         <div className="card-claim-box">
                           <p className="card-claim-title">Raza de mascota</p>
                           <p className="card-claim-text">{product.dirigido}</p>
-                        </div>
+                        </div> */}
                         <div className="card-claim-box">
                           <p className="card-claim-title">Precio del producto</p>
                           <p className="card-claim-text">S/{product.precio}</p>
@@ -192,7 +193,7 @@ function Products() {
                       <div className="card-footer">
                         <div className="row">
                           <div className="col-md-6 col-sm-12">
-                            <button onClick={deleteProducto} className="btn btn-danger">Eliminar producto</button>
+                            <button onClick={deleteProducto} className="btn btn-outline-danger">Eliminar producto</button>
                           </div>
                           <div className="col-md-6 col-sm-12">
                             <button onClick={()=>{setUpdate(true)}} className="btn btn-primary">Editar producto</button>

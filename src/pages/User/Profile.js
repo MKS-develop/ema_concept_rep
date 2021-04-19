@@ -24,7 +24,7 @@ function Profile() {
 
         <div className="main-content-container container-fluid px-4">
 
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
                   <Link to="/profile" className="ml-3 mr-3 page-title">Mi cuenta</Link>

@@ -134,7 +134,6 @@ function Register() {
     )
 
     async function onRegister() {
-      //Aquí estoy rellenando la información del usuario para utilizarla en el archivo "config"
         const userInfo = {
             nombre: nombreCompleto,
             nombreComercial: nombreComercial ?? nombreCompleto,
@@ -143,18 +142,13 @@ function Register() {
             telefono: telefono,
             identificacion: identificacion,
             direccion: direccion,
+            role: "Administrador"
         }
 
 		try {
-      //Vas a ver mucho este "firebase.CUALQUIERCOSA" y es porque estoy utilizando 
-      //la clase de firebase del arhcivo "config" donde estan todas estas funcionalidades
       await firebase.register(email, password)
-      //Con esto pasa lo mismo, llamo a la clase "firebase" y su instancía "storage" que definí en el archivo
-      //"config"
       await firebase.storage.ref(`/Aliados imagenes/${file.name}`).put(file)
       await firebase.storage.ref("Aliados imagenes").child(file.name).getDownloadURL().then((urlI) => {
-        //Imagino que ya sabes que lo mismo pasa aquí, la función "AddUser" esta en el archivo "config"
-        //y le estoy pasando el objeto del usuario anteriormente creado como parametro
         firebase.addUser(email, userInfo, urlI).then((val)=>{
           if(userInfo.tipoAliado === "Médico"){
             window.location.href = "/register/doctor_register";

@@ -42,7 +42,7 @@ function Claims() {
   return (
     <div className="main-content-container container-fluid px-4">
 
-       <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+       <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
         <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
           <div className="row align-items-center">
             <div className="col">
@@ -100,7 +100,7 @@ function Claims() {
             <div className="card-footer">
               <div className="row">
                 <div className="col-md-6 col-sm-12">
-                  <button onClick={deleteReclamo} className="btn btn-danger">Eliminar reclamo</button>
+                  <button onClick={deleteReclamo} className="btn btn-outline-danger">Eliminar reclamo</button>
                 </div>
                 <div className="col-md-6 col-sm-12">
                   <button onClick={uploadReclamo} className="btn btn-primary">Editar reclamo</button>

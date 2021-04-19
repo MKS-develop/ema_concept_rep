@@ -6,15 +6,30 @@ function Navbar() {
 
     const [showProfile, setShowProfile] = useState(false);
     const [showNoti, setShowNoti] = useState(false);
-    
+
     const showProfileClick = () => setShowProfile(!showProfile);  
     const showNotificationsClick = () => setShowNoti(!showNoti);  
 
     const [user, setUser] = useState({})
-    
-	useEffect(() => {
-        firebase.getCurrentUser().then(setUser)
-	}, [])
+    const [nno, setNno] = useState(0)
+
+    const getOrders = async(id) =>{
+        let nno = [];
+        await firebase.db.collection('Ordenes').where("aliadoId", "==", id).where("status", "==", "Por confirmar")
+        .get().then(val => {
+          val.docs.forEach(item=>{
+            nno.push(item.data())
+          })
+        })
+        setNno(nno.length)
+    }
+
+    useEffect(() => {
+        firebase.getCurrentUser().then((val)=>{
+          setUser(val)
+          getOrders(val.aliadoId)
+        });
+    }, [])
 
     return (
         <div className="main-navbar sticky-top bg-white">
@@ -42,20 +57,19 @@ function Navbar() {
                     <p onClick={()=>showNotificationsClick()} className="nav-link nav-link-icon text-center">
                         <div className="nav-link-icon__wrapper">
                             <i className="material-icons">&#xE7F4;</i>
-                            <span className="badge badge-pill badge-danger">2</span>
+                            <span className="badge badge-pill badge-danger">{nno > 9 ? "+9" : nno }</span>
                         </div>
                     </p>
                     <div className={showNoti ? "dropdown-menu dropdown-menu-small show" : "dropdown-menu dropdown-menu-small"} aria-labelledby="dropdownMenuLink">
-                    <a className="dropdown-item" href="/">
+                    <a className="dropdown-item" href="/orders">
                         <div className="notification__icon-wrapper">
                         <div className="notification__icon">
                             <i className="material-icons">&#xE8D1;</i>
                         </div>
                         </div>
                         <div className="notification__content">
-                        <span className="notification__category">Ventas</span>
-                        <p>Last week your store’s sales count decreased by
-                            <span className="text-danger text-semibold">5.52%</span>. It could have been worse!</p>
+                        <span className="notification__category">Órdenes</span>
+                        <p>Tienes <span className="text-success text-semibold">{nno}</span> órdenes por confirmar</p>
                         </div>
                     </a>
                     <a className="dropdown-item notification__all text-center" href="/"> Ver notificaciones </a>
@@ -72,8 +86,9 @@ function Navbar() {
     )
 
     async function logout() {
-		await firebase.logout()
-        window.location.href = "/login";
+		await firebase.logout().then((val)=>{
+            window.location.href = "/login";
+        })
 	}
 }
 

@@ -25,6 +25,7 @@ function AgendaServiceCreation() {
     const [desansoDesde, setDescansoDesde] = useState(null)
     const [desansoHasta, setDescansoHasta] = useState(null)
     
+    const [duracion, setDuracion] = useState(null)
     const [aDesde, setADesde] = useState(null)
     const [aHasta, setAHasta] = useState(null)
     const [lDesde, setLDesde] = useState(null)
@@ -75,9 +76,9 @@ function AgendaServiceCreation() {
         if(data.state === undefined || data.state === null){
           window.location.href = "/configuration/services"
         }
-      firebase.getCurrentUser().then((val)=>{
-        setUser(val)
-      })
+        firebase.getCurrentUser().then((val)=>{
+          setUser(val)
+        })
     }, [])
 
     return (
@@ -94,7 +95,7 @@ function AgendaServiceCreation() {
             : <div></div>
             }
             
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
                   <div className="col">
@@ -111,6 +112,13 @@ function AgendaServiceCreation() {
             
             <div className="row">
             <div className="col-lg-8 col-md-8 col-sm-12">
+                <div className="agenda-container">
+                    <div className="row align-items-center justify-content-spacebetween no-gutters">
+                        <p className="mb-0 agenda-title">Tiempo promedio de atenición</p>
+                        <TimePicker clearable placeholder="00:00" ampm={false} label="" value={duracion} onChange={setDuracion}/>
+                    </div>
+                    
+                </div>
                 <div className="agenda-container">
                     <p className="mb-2 agenda-title">Horario de atención</p>
                     <div className="row align-items-center">
@@ -143,21 +151,25 @@ function AgendaServiceCreation() {
                                 }else if(aDesde > aHasta){
                                     setEmessage("La hora inicial deber ser menor a la final")
                                     setError(true)
+                                }else if(duracion === null){
+                                    setEmessage("El tiempo promedio de atención es requerido")
+                                    setError(true)
                                 }else{
                                     let desde = moment(aDesde).toDate().getHours() +  ":" + moment(aDesde).toDate().getMinutes()
                                     let hasta = moment(aHasta).toDate().getHours() +  ":" + moment(aHasta).toDate().getMinutes()
+                                    let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
                                     setDesdea(desde)
                                     setHastaa(hasta)
                                     setAllHoras({
                                         ...allHoras, 
-                                        horas: AgendaConfig.getTimes(desde, hasta),
-                                        horasLunes: AgendaConfig.getTimes(desde, hasta),
-                                        horasMartes: AgendaConfig.getTimes(desde, hasta),
-                                        horasMiercoles: AgendaConfig.getTimes(desde, hasta),
-                                        horasJueves: AgendaConfig.getTimes(desde, hasta),
-                                        horasViernes: AgendaConfig.getTimes(desde, hasta),
-                                        horasSabado: AgendaConfig.getTimes(desde, hasta),
-                                        horasDomingo: AgendaConfig.getTimes(desde, hasta),
+                                        horas: AgendaConfig.getTimes(desde, hasta, duration),
+                                        horasLunes: AgendaConfig.getTimes(desde, hasta, duration),
+                                        horasMartes: AgendaConfig.getTimes(desde, hasta, duration),
+                                        horasMiercoles: AgendaConfig.getTimes(desde, hasta, duration),
+                                        horasJueves: AgendaConfig.getTimes(desde, hasta, duration),
+                                        horasViernes: AgendaConfig.getTimes(desde, hasta, duration),
+                                        horasSabado: AgendaConfig.getTimes(desde, hasta, duration),
+                                        horasDomingo: AgendaConfig.getTimes(desde, hasta, duration),
                                     })
                                 }
                             }}><i className="material-icons">save</i> Guardar</button>
@@ -212,19 +224,23 @@ function AgendaServiceCreation() {
                                 }else if(fh === allHoras.horas.length){
                                     setEmessage("Horario de descanso implementado, intenta ingresar un nuevo horario de atención")
                                     setError(true)
+                                }else if(duracion === null){
+                                    setEmessage("El tiempo promedio de atención es requerido")
+                                    setError(true)
                                 }else{
                                     let desde = moment(desansoDesde).toDate().getHours() +  ":" + (moment(desansoDesde).toDate().getMinutes() === 0 ? moment(desansoDesde).toDate().getMinutes() + "0" : moment(desansoDesde).toDate().getMinutes() )
                                     let hasta = moment(desansoHasta).toDate().getHours() +  ":" + (moment(desansoHasta).toDate().getMinutes() === 0 ? moment(desansoHasta).toDate().getMinutes() + "0" : moment(desansoHasta).toDate().getMinutes() )
+                                    let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
                                     setAllHoras({
                                         ...allHoras, 
-                                        horas: AgendaConfig.restHoursFrom(allHoras.horas, desde, hasta),
-                                        horasLunes: AgendaConfig.restHoursFrom(allHoras.horasLunes, desde, hasta),
-                                        horasMartes: AgendaConfig.restHoursFrom(allHoras.horasMartes, desde, hasta),
-                                        horasMiercoles: AgendaConfig.restHoursFrom(allHoras.horasMiercoles, desde, hasta),
-                                        horasJueves: AgendaConfig.restHoursFrom(allHoras.horasJueves, desde, hasta),
-                                        horasViernes: AgendaConfig.restHoursFrom(allHoras.horasViernes, desde, hasta),
-                                        horasSabado: AgendaConfig.restHoursFrom(allHoras.horasSabado, desde, hasta),
-                                        horasDomingo: AgendaConfig.restHoursFrom(allHoras.horasDomingo, desde, hasta),
+                                        horas: AgendaConfig.restHoursFrom(allHoras.horas, desde, hasta, duration),
+                                        horasLunes: AgendaConfig.restHoursFrom(allHoras.horasLunes, desde, hasta, duration),
+                                        horasMartes: AgendaConfig.restHoursFrom(allHoras.horasMartes, desde, hasta, duration),
+                                        horasMiercoles: AgendaConfig.restHoursFrom(allHoras.horasMiercoles, desde, hasta, duration),
+                                        horasJueves: AgendaConfig.restHoursFrom(allHoras.horasJueves, desde, hasta, duration),
+                                        horasViernes: AgendaConfig.restHoursFrom(allHoras.horasViernes, desde, hasta, duration),
+                                        horasSabado: AgendaConfig.restHoursFrom(allHoras.horasSabado, desde, hasta, duration),
+                                        horasDomingo: AgendaConfig.restHoursFrom(allHoras.horasDomingo, desde, hasta, duration),
                                     })
                                     setFH(allHoras.horas.length)
                                     console.log("Cantidad de horas: " + allHoras.horas.length)
@@ -312,12 +328,17 @@ function AgendaServiceCreation() {
                                     }else if(lDesde > lHasta){
                                         setEmessage("La hora inicial deber ser menor a la final")
                                         setError(true)
+                                    }else if(duracion === null){
+                                        setEmessage("El tiempo promedio de atención es requerido")
+                                        setError(true)
                                     }else{
                                         let desde = moment(lDesde).toDate().getHours() +  ":" + moment(lDesde).toDate().getMinutes()
-                                        let hasta = moment(lHasta).toDate().getHours() +  ":" + moment(lHasta).toDate().getMinutes()                                
+                                        let hasta = moment(lHasta).toDate().getHours() +  ":" + moment(lHasta).toDate().getMinutes()
+                                        let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
+
                                         setAllHoras({
                                             ...allHoras, 
-                                            horasLunes: AgendaConfig.getTimes(desde, hasta),
+                                            horasLunes: AgendaConfig.getTimes(desde, hasta, duration),
                                         })
                                     }
                                 }}><i className="material-icons">save</i> Guardar</button>
@@ -378,12 +399,17 @@ function AgendaServiceCreation() {
                                     }else if(maDesde > maHasta){
                                         setEmessage("La hora inicial deber ser menor a la final")
                                         setError(true)
+                                    }else if(duracion === null){
+                                        setEmessage("El tiempo promedio de atención es requerido")
+                                        setError(true)
                                     }else{
                                         let desde = moment(maDesde).toDate().getHours() +  ":" + moment(maDesde).toDate().getMinutes()
-                                        let hasta = moment(maHasta).toDate().getHours() +  ":" + moment(maHasta).toDate().getMinutes()                                
+                                        let hasta = moment(maHasta).toDate().getHours() +  ":" + moment(maHasta).toDate().getMinutes()
+                                        let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
+
                                         setAllHoras({
                                             ...allHoras, 
-                                            horasMartes: AgendaConfig.getTimes(desde, hasta),
+                                            horasMartes: AgendaConfig.getTimes(desde, hasta, duration),
                                         })
                                     }
                                 }}><i className="material-icons">save</i> Guardar</button>
@@ -444,12 +470,17 @@ function AgendaServiceCreation() {
                                     }else if(miDesde > miHasta){
                                         setEmessage("La hora inicial deber ser menor a la final")
                                         setError(true)
+                                    }else if(duracion === null){
+                                        setEmessage("El tiempo promedio de atención es requerido")
+                                        setError(true)
                                     }else{
                                         let desde = moment(miDesde).toDate().getHours() +  ":" + moment(miDesde).toDate().getMinutes()
-                                        let hasta = moment(miHasta).toDate().getHours() +  ":" + moment(miHasta).toDate().getMinutes()                                
+                                        let hasta = moment(miHasta).toDate().getHours() +  ":" + moment(miHasta).toDate().getMinutes()
+                                        let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
+
                                         setAllHoras({
                                             ...allHoras, 
-                                            horasMiercoles: AgendaConfig.getTimes(desde, hasta),
+                                            horasMiercoles: AgendaConfig.getTimes(desde, hasta, duration),
                                         })
                                     }
                                 }}><i className="material-icons">save</i> Guardar</button>
@@ -510,12 +541,17 @@ function AgendaServiceCreation() {
                                     }else if(jDesde > jHasta){
                                         setEmessage("La hora inicial deber ser menor a la final")
                                         setError(true)
+                                    }else if(duracion === null){
+                                        setEmessage("El tiempo promedio de atención es requerido")
+                                        setError(true)
                                     }else{
                                         let desde = moment(jDesde).toDate().getHours() +  ":" + moment(jDesde).toDate().getMinutes()
-                                        let hasta = moment(jHasta).toDate().getHours() +  ":" + moment(jHasta).toDate().getMinutes()                                
+                                        let hasta = moment(jHasta).toDate().getHours() +  ":" + moment(jHasta).toDate().getMinutes()
+                                        let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
+
                                         setAllHoras({
                                             ...allHoras, 
-                                            horasJueves: AgendaConfig.getTimes(desde, hasta),
+                                            horasJueves: AgendaConfig.getTimes(desde, hasta, duration),
                                         })
                                     }
                                 }}><i className="material-icons">save</i> Guardar</button>
@@ -576,12 +612,17 @@ function AgendaServiceCreation() {
                                     }else if(vDesde > vHasta){
                                         setEmessage("La hora inicial deber ser menor a la final")
                                         setError(true)
+                                    }else if(duracion === null){
+                                        setEmessage("El tiempo promedio de atención es requerido")
+                                        setError(true)
                                     }else{
                                         let desde = moment(vDesde).toDate().getHours() +  ":" + moment(vDesde).toDate().getMinutes()
-                                        let hasta = moment(vHasta).toDate().getHours() +  ":" + moment(vHasta).toDate().getMinutes()                                
+                                        let hasta = moment(vHasta).toDate().getHours() +  ":" + moment(vHasta).toDate().getMinutes()
+                                        let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
+
                                         setAllHoras({
                                             ...allHoras, 
-                                            horasViernes: AgendaConfig.getTimes(desde, hasta),
+                                            horasViernes: AgendaConfig.getTimes(desde, hasta, duration),
                                         })
                                     }
                                 }}><i className="material-icons">save</i> Guardar</button>
@@ -642,12 +683,17 @@ function AgendaServiceCreation() {
                                     }else if(sDesde > sHasta){
                                         setEmessage("La hora inicial deber ser menor a la final")
                                         setError(true)
+                                    }else if(duracion === null){
+                                        setEmessage("El tiempo promedio de atención es requerido")
+                                        setError(true)
                                     }else{
                                         let desde = moment(sDesde).toDate().getHours() +  ":" + moment(sDesde).toDate().getMinutes()
-                                        let hasta = moment(sHasta).toDate().getHours() +  ":" + moment(sHasta).toDate().getMinutes()                                
+                                        let hasta = moment(sHasta).toDate().getHours() +  ":" + moment(sHasta).toDate().getMinutes()
+                                        let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
+
                                         setAllHoras({
                                             ...allHoras, 
-                                            horasSabado: AgendaConfig.getTimes(desde, hasta),
+                                            horasSabado: AgendaConfig.getTimes(desde, hasta, duration),
                                         })
                                     }
                                 }}><i className="material-icons">save</i> Guardar</button>
@@ -708,12 +754,17 @@ function AgendaServiceCreation() {
                                     }else if(dDesde > dHasta){
                                         setEmessage("La hora inicial deber ser menor a la final")
                                         setError(true)
+                                    }else if(duracion === null){
+                                        setEmessage("El tiempo promedio de atención es requerido")
+                                        setError(true)
                                     }else{
                                         let desde = moment(dDesde).toDate().getHours() +  ":" + moment(dDesde).toDate().getMinutes()
-                                        let hasta = moment(dHasta).toDate().getHours() +  ":" + moment(dHasta).toDate().getMinutes()                                
+                                        let hasta = moment(dHasta).toDate().getHours() +  ":" + moment(dHasta).toDate().getMinutes()
+                                        let duration = moment(duracion).toDate().getHours() +  ":" + moment(duracion).toDate().getMinutes()
+
                                         setAllHoras({
                                             ...allHoras, 
-                                            horasDomingo: AgendaConfig.getTimes(desde, hasta),
+                                            horasDomingo: AgendaConfig.getTimes(desde, hasta, duration),
                                         })
                                     }
                                 }}><i className="material-icons">save</i> Guardar</button>

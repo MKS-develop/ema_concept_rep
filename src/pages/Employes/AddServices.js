@@ -1,11 +1,11 @@
-import { timePickerDefaultProps } from '@material-ui/pickers/constants/prop-types';
-import moment from 'moment'
-import 'moment/locale/es-mx';
+import {useLocation, useHistory} from 'react-router-dom';
 import React, {useState, useEffect} from 'react'
-import firebase from '../firebase/config'
+import firebase from '../../firebase/config'
 
-function Prueba(){
-  
+function AddServicesRoles(){
+
+  let data = useLocation()
+  let history = useHistory()
   const [user, setUser] = useState({})
   const [objeto, setObjeto] = useState({})
   const [newCategorias, SetNewCategorias] = useState([])
@@ -15,41 +15,6 @@ function Prueba(){
   const [value, setValue] = useState("")
   const [categoria, setCategoria] = useState(null)
   const [categoriasServicios, setCategoriasServicios] = useState([])
-
-
-  // const [orders, setOrders] = useState([])
-  // const [pageNumber, setPageNumber] = useState(1)
-  // const [limit, setLimit] = useState(5)
-  // const [pagesLength, setPagesLength] = useState([])
-  // const [pagesNumbers, setPagesNumbers] = useState([])
-  
-  // const handleClick = (i) => {
-    // setPageNumber(i)
-    // getOrders(user.aliadoId)
-  // }
-
-  // const getOrders = async(id) => {
-  //   let tipos = []
-  //   let tipos2 = []
-  //   let tipos3 = []
-  //   await firebase.db.collection("Ordenes").where("aliadoId", "==", id).get().then((val)=>{
-  //     val.docs.forEach((doc)=>{
-  //       tipos.push(doc.data())
-  //     })
-      
-  //     for(let i = 0; i < tipos.length; i++){
-  //       tipos3.push(i)
-  //     }
-
-  //     setPagesLength(tipos3)
-  //     console.log(tipos3 + " " + pagesLength)
-
-  //     for(let i = (limit * pageNumber  ); i <= (limit * pageNumber);i++){
-  //       tipos2.push(tipos[i])
-  //     }
-  //     setOrders(tipos2)
-  //   })
-  // }
 
   const getCategories = async() => {
     let tipos = []
@@ -94,41 +59,8 @@ function Prueba(){
   }
 
   const addField = async(f, v) => {
-    // try{
-    //   await firebase.db.collection("Aliados").doc(user.aliadoId).collection("Roles").doc("rolName").set({
-    //     nombreRol: "rolName"
-    //   }).then((val)=>{
-    //     for (let key in objeto) {
-    //       firebase.db.collection("Aliados").doc(user.aliadoId).collection("Roles").doc("rolName").collection("Categorias").doc(key).set({
-    //         categoriaId: key
-    //       }).then((val2)=>{
-    //         objeto[key].forEach((a)=>{
-    //           firebase.db.collection("Aliados").doc(user.aliadoId).collection("Roles").doc("rolName").collection("Categorias").doc(key).collection("Servicios").doc(a).set({
-    //             servicioId: a
-    //           })
-    //         })
-    //       }) 
-    //     }
-    //   })
-    //   alert("Listooo")
-    // }catch(e){
-    //   alert(e)
-    // }
-    
-    // if(f !== undefined){
-      // objeto[f] = [v]
-      // console.log(objeto[f])
       objeto[f].push(v)
       console.log(objeto)
-      // console.log(f + " " + v)
-    // }
-
-    // for (let key in objeto) {
-      // console.log(key) 
-      // objeto[key].forEach((a)=>{
-        // console.log( key + " " + a)
-      // })
-    // }
 
   }
 
@@ -137,28 +69,35 @@ function Prueba(){
   }
 
     useEffect(() => {
+        if(data.state === undefined || data.state === null){
+          window.location.href = "/employes"
+        }
         firebase.getCurrentUser().then((val)=>{
           setUser(val)
-          // getOrders(val.aliadoId)
         });
         getCategories()
     }, [])
 
     return (
       <div className="main-content-container container-fluid px-4">
-        {/* {orders.map((order) => {
-          return (
-            <p key={order.oid}>{order.oid}</p>
-          )
-        })}
-        <div className="row">
-          {pagesLength.map((page, i)=>{
-            return (
-              <div onClick={()=>{handleClick(i)}} className={`ml-2 btn ${ pageNumber === i ? "btn-primary" : "btn-outline-primary"} `} key={i}>{i + page} </div>
-            )
-          })}
+        <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
+          <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
+            <div className="row align-items-center">
+              <div className="col">
+                <p className="page-title">Añadir categorías y tipos de servicios al rol</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-12 col-sm-1 mb-0">
+            <div className="row align-items-center justify-content-space-around">
+              <i className="material-icons color-white display-5">help_outline</i>
+            </div>
+          </div>
         </div>
-        {pageNumber} */}
+        <div className="my-3 row align-items-center justify-content-spacebetween no-gutters">
+          <p className="mb-0">Añade las categorías y servicios los cuales este rol tendrá disponible</p>
+          <button className={`btn ${newCategorias.length > 0 ? "btn-primary" : "btn-disabled" }`} onClick={()=>{newCategorias.length > 0 ? uploadServices() : alert(data.state.roleId) }}>Continuar</button>
+        </div>
         <div className="row my-4">
           <div className="col-lg-4">
             <p className="lead ">Categorías</p>
@@ -202,14 +141,39 @@ function Prueba(){
               )
             }) : <div></div>}
           </div>
-          
-          {/* <button onClick={()=>{
-            addField()
-          }}>Añadir</button> */}
         </div>
       </div>
     )
 
+    async function uploadServices(){
+        try{
+            for (let key in objeto) {
+              await firebase.db.collection("Roles").doc(data.state.roleId).collection("CategoriasServicios").doc(key).set({
+                categoriaId: key
+              }).then((val2)=>{
+                objeto[key].forEach((a)=>{
+                  firebase.db.collection("Roles").doc(data.state.roleId).collection("CategoriasServicios").doc(key).collection("Servicios").doc(a).set({
+                    servicioId: a
+                  })
+                })
+              }) 
+            }
+            if(data.state.products){
+                history.push({
+                    state: {roleId: data.state.roleId},
+                    pathname: "/create-role/addproducts"
+                })
+            }else{
+                history.push({
+                    pathname: "/employes"
+                })
+            }
+        }catch(e){
+            alert(e)
+        }
+        // window.location.href = "/employes"
+    }
+
 }
 
-export default Prueba
+export default AddServicesRoles

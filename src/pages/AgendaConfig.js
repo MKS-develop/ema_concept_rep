@@ -6,12 +6,20 @@ moment.locale("es");
 
 class AgendaConfig {
     
-    getTimes(desde, hasta) {
+    getTimes(desde, hasta, duracion) {
+
+        const time2 = duracion.split(":")
+        const hh = parseInt(time2[0])
+        const mm = parseInt(time2[1])
+
+        const multply = hh * 60
+
+        const durationInMinutes = multply + mm
+
         const startTime = desde;
         const startTime2 = startTime.split(":")
         const endTime = hasta;
         const endTime2 = endTime.split(":")
-        const durationInMinutes = '20';
         var list = []
         var list2 = []
         
@@ -24,7 +32,7 @@ class AgendaConfig {
         var timea = Shour + ":" + Sminute
         list.push(timea)
         do {
-            Sminute += parseInt(durationInMinutes)
+            Sminute += durationInMinutes
             if(Sminute >= 60) {
                 Sminute -= 60
                 Shour++
@@ -42,7 +50,6 @@ class AgendaConfig {
                 list2.push(time)
             }
         })
-        // console.log(list2)
         return list2
     }
 
@@ -53,7 +60,6 @@ class AgendaConfig {
         let endDate = moment().add(6, 'months')
         while (moment(currentDay).isBefore(endDate)) {
             currentDay = moment(currentDay).add(1, 'day')
-            // let currentDay2 = moment(currentDay).toDate()
             list.push(currentDay.format("ddd, MMM D YYYY"))
             nbDays++
         }

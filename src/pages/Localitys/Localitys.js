@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react'
 import firebase from '../../firebase/config'
-import {Link} from 'react-router-dom';
+import {Link, useHistory} from 'react-router-dom';
 import moment from 'moment';
 
 function Localitys() {
-
+    let history = useHistory()
     const hiddenFileInput = React.useRef(null);
     const [btnMessage, setBtnMessage] = useState("Crear localidad");
     const [localitys, setLocalitys] = useState([])
@@ -63,11 +63,11 @@ function Localitys() {
     return (
         <div className="main-content-container container-fluid px-4">
 
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
                   <div className="col">
-                    <p className="page-title"><Link className="color-white" to="/configuration">Configuración</Link> {'>'} Localidades</p>
+                    <p className="page-title bold"><Link className="page-title light" to="/configuration">Configuración</Link> {'>'} Localidades</p>
                   </div>
                 </div>
               </div>
@@ -128,7 +128,7 @@ function Localitys() {
                       <div className="card-footer">
                         <div className="row">
                           <div className="col-md-6 col-sm-12">
-                            <button onClick={deleteLocality} className="btn btn-danger">Eliminar localidad</button>
+                            <button onClick={deleteLocality} className="btn btn-outline-danger">Eliminar localidad</button>
                           </div>
                           {/* <div className="col-md-6 col-sm-12">
                             <button onClick={uploadLocality} className="btn btn-primary">Editar producto</button>
@@ -142,13 +142,6 @@ function Localitys() {
                           <h4>Crear localidad</h4>
                         </div>
                         <div className="px-4">
-                          {/* <div className="form-group">
-                            <select className="form-control" value={tipoproducto} onChange={e => setTipoproducto(e.target.value)}>
-                              {tiposproductos.map(data => (
-                                  <option key={data} value={data}>{data}</option>
-                              ))}
-                            </select>
-                          </div> */}
 
                           <input type="file"
                             ref={hiddenFileInput}
@@ -183,7 +176,7 @@ function Localitys() {
                           
                         </div>
                         <div className="card-footer">
-                          <button onClick={()=>uploadLocality} className="btn btn-primary btn-block">{btnMessage}</button>
+                          <button onClick={()=>{uploadLocality()}} className="btn btn-primary btn-block">{btnMessage}</button>
                         </div>
                       </div>
                     </form>}
@@ -213,7 +206,10 @@ function Localitys() {
             createdOn: moment().toDate(),
           })
         })
-        window.location.href = "/configuration/localidades/addservices"
+        history.push({
+          pathname: "/configuration/localitys/addservices", 
+          state: { localidadId: id}
+        })
       } catch(error) {
         alert(error.message)
       }

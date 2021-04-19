@@ -4,7 +4,7 @@ import 'firebase/storage';
 import 'firebase/firestore';
 import 'firebase/auth';
 import moment from 'moment';
-import { getAllByPlaceholderText } from '@testing-library/dom';
+import { getFirebaseApp } from './firebaseApp';
 
 var firebaseConfig = {}
 
@@ -19,10 +19,8 @@ firebaseConfig = {
 };
 console.log('Estamos en Desarrollo')
 
-//Estoy manejando la funcionalidad de autenticación y registro del usuario en este archivo, para así poder acceder a la bd, el storage
-//y la propia información del usuario desde todos lados
-
 class Firebase {
+
     constructor(){
         firebase.initializeApp(firebaseConfig);
         this.auth = firebase.auth();
@@ -30,30 +28,25 @@ class Firebase {
         this.storage = firebase.storage();
     }
 
-    //Inicar sesión
     login(email, password){
         return this.auth.signInWithEmailAndPassword(email, password)
     }
-    
-    //Registro
+
     async register(email, password){
         await this.auth.createUserWithEmailAndPassword(email, password)
     }
 
-    //Una vez se registro el usuario se crea el documento en la colección
-    addUser(email, userInfo, url) {
-		  if(!this.auth.currentUser) {
-		  	return alert('No autorizado')
-		  }
-      //Esto es solo para el codigo del aliado, lo quitas si quieres
-      let aliados = []
-      this.db.collection('Aliados').get().then(data=>{  
-        data.forEach(tipo=>{
-          aliados.push(tipo.id)
-        })
+  addUser(email, userInfo, url) {
+		if(!this.auth.currentUser) {
+			return alert('No autorizado')
+		}
+    let aliados = []
+    this.db.collection('Aliados').get().then(data=>{  
+      data.forEach(tipo=>{
+        aliados.push(tipo.id)
       })
-      //Para la información del usuario estoy usando un objeto que relleno en el registro
-		  return this.db.collection("Aliados").doc(this.auth.currentUser.uid).set({
+    })
+		return this.db.collection("Aliados").doc(this.auth.currentUser.uid).set({
         aliadoId: this.auth.currentUser.uid,
         nombre: userInfo.nombre,
         aliadoCodigo: "57-" + aliados.length,
@@ -65,34 +58,70 @@ class Firebase {
         identificacion: userInfo.identificacion,
         direccion: userInfo.direccion,
         avatar: url,
+        role: userInfo.role,
         email: email,
-      }).then((val)=>{
-        var localidadId = this.db.collection("Localidades").doc().id
-        this.db.collection("Localidades").doc(localidadId).set({
-          aliadoId: this.auth.currentUser.uid,
-          serviciosContiene: false,
-          localidadId: localidadId,
-          nombreLocalidad: "Localidad Principal",
-          locacionImg: url,
-          ciudad: userInfo.direccion,
-          pais: "Colombia",
-          lc: "Localidad Principal",
-          direccionDetallada: userInfo.direccion,
-          direccionLocalidad: userInfo.direccion,
-          telefono: userInfo.telefono,
-          otroTelefono: userInfo.telefono,
-          createdOn: moment().toDate(),
-        })
+    }).then((val)=>{
+      var localidadId = this.db.collection("Localidades").doc().id
+      this.db.collection("Localidades").doc(localidadId).set({
+        aliadoId: this.auth.currentUser.uid,
+        serviciosContiene: false,
+        localidadId: localidadId,
+        nombreLocalidad: "Localidad Principal",
+        locacionImg: url,
+        ciudad: userInfo.direccion,
+        pais: "Colombia",
+        lc: "Localidad Principal",
+        direccionDetallada: userInfo.direccion,
+        direccionLocalidad: userInfo.direccion,
+        telefono: userInfo.telefono,
+        otroTelefono: userInfo.telefono,
+        createdOn: moment().toDate(),
+      })
         
-        this.db.collection("Aliados").doc(this.auth.currentUser.uid).collection("Petpoints")
-        .doc(this.auth.currentUser.uid).set({
-          aliadoId: this.auth.currentUser.uid,
-          ppAcumulados: 500,
-          ppCanjeados: 0,
-          createdOn: moment().toDate(),
+      this.db.collection("Aliados").doc(this.auth.currentUser.uid).collection("Petpoints")
+      .doc(this.auth.currentUser.uid).set({
+        aliadoId: this.auth.currentUser.uid,
+        ppAcumulados: 500,
+        ppCanjeados: 0,
+        createdOn: moment().toDate(),
+      })
+    })
+	}
+  
+  // Crear instancia local en la función para crear el usuario 
+  async createRoleUser(email, password, userInfo, url){
+
+    let authInstance = getFirebaseApp('auth-worker');
+    let authInstanceWorker = firebase.auth(authInstance);
+    authInstanceWorker.setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+    try {
+      const userData = await authInstanceWorker.createUserWithEmailAndPassword(email, password);
+      this.db.collection("Aliados").doc(userData.user.uid).set({
+        aliadoId: userData.user.uid,
+        nombre: userInfo.nombre,
+        // aliadoCodigo: "57-" + aliados.length,
+        nombreComercial: userInfo.nombreComercial ?? userInfo.nombre,
+        tipoEmpresa: userInfo.tipoEmpresa,
+        tipoAliado: userInfo.tipoAliado,
+        pais: "Colombia",
+        telefono: userInfo.telefono,
+        identificacion: userInfo.identificacion,
+        direccion: userInfo.direccion,
+        avatar: userInfo.avatar,
+        role: userInfo.role,
+        email: userData.user.email,
+      }).then((val)=>{
+        this.db.collection("Aliados").doc(this.auth.currentUser.uid).collection("Usuarios").doc(userData.user.uid).set({
+          aliadoId: userData.user.uid,
+        }).then((val)=>{
+          window.location.href = "/employes";
         })
       })
-	}
+    } catch (error) {
+      return alert(error);
+    }
+  }
 
   //Salir de la sesión
   logout(){

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Link, useLocation} from 'react-router-dom';
 import firebase from '../../firebase/config'
+import moment from 'moment';
 
 function AddServices() {
 
@@ -11,6 +12,17 @@ function AddServices() {
     const [LPID, setLPID] = useState("");
     const [services, setServices] = useState([])
 
+    const getLPID = async(id) =>{
+      await firebase.db.collection("Localidades").where("lc", "==", "Localidad Principal")
+      .where("aliadoId", "==", id).get().then(val=>{
+        val.docs.forEach(item=>{
+          setLPID(item.data().localidadId)
+          getServices(item.data().localidadId)
+        })
+      })
+
+    }
+
     const getServices = async(id) =>{
         let tipos = [];
         await firebase.db.collection("Localidades").doc(id).collection("Servicios").get().then(val=>{
@@ -19,17 +31,6 @@ function AddServices() {
           })
           setServices(tipos)
         })
-      }
-  
-      const getLPID = async(id) =>{
-        await firebase.db.collection("Localidades").where("lc", "==", "Localidad Principal")
-        .where("aliadoId", "==", id).get().then(val=>{
-          val.docs.forEach(item=>{
-            setLPID(item.data().localidadId)
-            getServices(item.data().localidadId)
-          })
-        })
-  
       }
       
       function addService(service){
@@ -42,6 +43,9 @@ function AddServices() {
       }
 
       useEffect(() => {
+        if(data.state === undefined || data.state === null){
+          window.location.href = "/configuration/localitys"
+        }
         firebase.getCurrentUser().then((val)=>{
           getLPID(val.aliadoId)
           setUser(val)
@@ -51,7 +55,7 @@ function AddServices() {
     return (
         <div className="main-content-container container-fluid px-4">
 
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
                   <div className="col">
@@ -68,6 +72,7 @@ function AddServices() {
 
             <div className="container">
               {/* <p onClick={()=>{console.log(selectedServices)}}>mostrar</p> */}
+                <button onClick={()=>{uploadServices()}} className="btn btn-primary btn-block">Agregar servicios a la localidad</button>
                 <div className="row">
                   {
                     services.length > 0 ? services.map(service=>{
@@ -93,6 +98,53 @@ function AddServices() {
 
           </div>
     )
+
+  async function uploadServices(){
+    try {
+      selectedServices.forEach((service)=>{
+        firebase.db.collection("Localidades").doc(data.state.localidadId).collection("Servicios").doc(service.servicioId).set({
+          activo: true,
+          agendaContiene: true,
+          aliadoId: user.aliadoId,
+          tipoAgenda: service.tipoAgenda,
+          cantidadDias: service.cantidadDias,
+          categoria: service.categoria,
+          condiciones: service.condiciones,
+          descripcion: service.descripcion,
+          precio: service.precio,
+          localidadId: data.state.localidadId,
+          servicioId: service.servicioId,
+          urlImagen: service.urlImagen,
+          titulo: service.titulo,
+          capacidad: service.capacidad,
+          unidad: service.unidad,
+          domicilio: service.domicilio,
+          delivery: service.delivery,
+          createdOn: moment().toDate(),
+        }).then((val)=>{
+          firebase.db.collection("Localidades").doc(LPID).collection("Servicios").doc(service.servicioId).collection("Agenda").get().then((dias)=>{
+            dias.docs.forEach((doc)=>{
+              let dia = doc.data()
+              firebase.db.collection("Localidades").doc(data.state.localidadId).collection("Servicios")
+              .doc(service.servicioId).collection("Agenda").doc(dia.fecha).set({
+                bloqueado: false,
+                servicioId: service.servicioId,
+                fecha: dia.fecha,
+                date: dia.date,
+                horasDia: dia.horasDia, 
+                capacidadDia: dia.capacidadDia,
+                createdOn: moment().toDate(),
+              })
+            })
+          })
+        })
+      })
+      window.location.href = "/configuration/localitys"
+    }catch(e){
+      console.log(e)
+    }
+  }
+
 }
 
 export default AddServices

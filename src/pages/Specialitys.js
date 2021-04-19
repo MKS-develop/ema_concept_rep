@@ -71,11 +71,11 @@ function Specialitys() {
   return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
     <div className="main-content-container container-fluid px-4">
-       <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+       <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
         <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
           <div className="row align-items-center">
             <div className="col">
-              <p className="page-title"><Link className="color-white" to="/configuration">Configuración</Link> {'>'} Especialidades</p>
+              <p className="page-title bold"><Link className="page-title light" to="/configuration">Configuración</Link> {'>'} Especialidades</p>
             </div>
           </div>
         </div>
@@ -129,7 +129,7 @@ function Specialitys() {
             <div className="card-footer">
               <div className="row">
                 <div className="col-md-6 col-sm-12">
-                  <button onClick={deleteReclamo} className="btn btn-danger">Eliminar especialidad</button>
+                  <button onClick={deleteReclamo} className="btn btn-outline-danger">Eliminar especialidad</button>
                 </div>
                 {/* <div className="col-md-6 col-sm-12">
                   <button className="btn btn-primary">Editar reclamo</button>

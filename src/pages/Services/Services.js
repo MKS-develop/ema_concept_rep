@@ -12,6 +12,7 @@ function Services() {
     const [localidadId, setLocalidadId] = useState("");
     const [services, setServices] = useState([])
     const [localidades, setLocalidades] = useState([])
+    const [localidadesVarias, setLocalidadesVarias] = useState([])
     const [user, setUser] = useState({})
     const [delivery, setDelivery] = useState(false)
     const [allLocalidades, setAllLocalidades] = useState(false)
@@ -21,6 +22,7 @@ function Services() {
     const [service, setService] = useState({})
     const tipoUnidad = ["Servicio", "Semana", "Día", "Hora", "Minuto"]
     const [update, setUpdate] = useState(false);
+    const [showLocalidadesModal, setShowLocalidadesModal] = useState(false);
     const [servInfo, setServInfo] = useState({
       categoria: "",
       titulo: "",
@@ -115,6 +117,10 @@ function Services() {
 
     }
     
+    const setterLocalidades = () =>{
+      setLocalidadesVarias(localidades)
+    }
+    
     useEffect(() => {
       firebase.getCurrentUser().then((val)=>{
         getLPID(val.aliadoId)
@@ -127,12 +133,54 @@ function Services() {
 
     return (
         <div className="main-content-container container-fluid px-4">
-
-            <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+          { showLocalidadesModal
+          ? <div className="cc-modal-wrapper fadeIn">
+              <div className="cc-modal">
+                <div className="cc-modal-header mb-2">
+                  <div className="no-gutters mb-3 row align-items-center justify-content-spacebetween">
+                    <h3 className="mb-0">Localidades</h3>
+                    <div className="row no-gutters position-relative custom-control custom-checkbox">
+                      <input onClick={()=>{ setterLocalidades() }} type="checkbox" className="custom-control-input" id="formsCheckboxDefault"/>
+                      <label className="custom-control-label" for="formsCheckboxDefault">Todas las localidades</label>
+                    </div>
+                  </div>
+                </div>
+                <div className="cc-modal-body">
+                  {localidades.map((l)=>{
+                    return (
+                      <div onClick={()=>{ localidadesVarias.includes(l) ? 
+                        setLocalidadesVarias(localidadesVarias.filter((l1) => l1 !== l))
+                      : setLocalidadesVarias([l, ...localidadesVarias]) }} className={`cc-modal-card mx-1 cursor-pointer ${localidadesVarias.includes(l) ? "active" : "" }`} style={{backgroundImage: `url(${l.locacionImg})` }} key={l.localidadId}>
+                        <div className="cc-modal-card-overlay">
+                          <p className="mb-0 cc-modal-card-p">
+                            {l.direccionLocalidad}
+                          </p>
+                          <p className="mb-0 cc-modal-card-p-strong">
+                            {l.nombreLocalidad}
+                          </p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+                <div className="cc-modal-footer align-items-center justify-content-spacebetween">
+                  {/* <div className={`btn ${"btn-primary"}`}> */}
+                  <button onClick={()=>{setShowLocalidadesModal(false)}} className={`btn btn-disabled`}>
+                    Cancelar
+                  </button>
+                  <button onClick={()=>{setShowLocalidadesModal(false)}} className={`btn btn-primary`}>
+                    Guardar
+                  </button>
+                </div>
+              </div>
+            </div>
+          : <div></div>
+          }
+            <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
               <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                 <div className="row align-items-center">
-                  <div className="col">
-                    <p className="page-title"><Link className="color-white" to="/configuration">Configuración</Link> {'>'} Servicios</p>
+                  <div className="ml-2 col row">
+                    <p className="page-title bold"><Link className="page-title light" to="/configuration">Configuración</Link> {'>'} Servicios</p>
                   </div>
                 </div>
               </div>
@@ -162,13 +210,28 @@ function Services() {
                               </div>
                             </div>
                           </div>
+                          // <div className="col-md-6 col-sm-12">
+
+                          //   <div  onClick={() => setService(service)} key={service.serviceId} style={{backgroundImage: `url(${service.urlImagen})` }} className="custom-card mb-4">
+                          //     <div className="custom-card-body">
+                          //       <h5 className="custom-card-title">
+                          //         <p className="text-fiord-blue mb-2">{service.titulo}</p>
+                          //       </h5>
+                          //       <p className="custom-card-text-type mb-2">{service.categoria}</p>
+                          //       <p className="custom-card-text mb-2">{service.descripcion}</p>
+                          //       <p className="custom-card-text-price">S/{service.precio}</p>
+                          //     </div>
+                          //   </div>
+
+                          // </div>
                         )
                         }) : <div className="text-center col-lg-12"><p>No hay servicios</p></div>
                       }
                     </div>
                 </div>
                 <div className="col-lg-5 col-md-5 col-sm-12">
-                    { service.titulo != null && !update ? <div className="card">
+                    { service.titulo != null && !update ? 
+                    <div className="card">
                       <div className="card-header-img-width">
                         <img src={service.urlImagen} alt=""/>
                       </div>
@@ -197,7 +260,7 @@ function Services() {
                       <div className="card-footer">
                         <div className="row">
                           <div className="col-md-6 col-sm-12">
-                            <button onClick={deleteService} className="btn btn-danger">Eliminar servicio</button>
+                            <button onClick={deleteService} className="btn btn-outline-danger">Eliminar servicio</button>
                           </div>
                           <div className="col-md-6 col-sm-12">
                             <button onClick={()=>{setUpdate(true); }} className="btn btn-primary">Editar servicio</button>
@@ -264,7 +327,10 @@ function Services() {
                           <div onClick={handleClick} className="card-update-product-img-fwidth">
                             {src !== "" ? <img src={src} alt="" /> : <div className="card-header-img-upload"><p className="material-icons icon">add</p><p className="mb-0">Cargar imagen</p></div>}
                           </div>
-                          <div className="form-group">
+                          <div className="form-group my-4">
+                            <button onClick={()=>{setShowLocalidadesModal(true)}} className="btn btn-primary btn-block">Mostrar localidades</button>
+                          </div>
+                          {/* <div className="form-group">
                             <div className="custom-control custom-checkbox mb-1">
                               <input onClick={()=>{setAllLocalidades(!allLocalidades) }} type="checkbox" className="custom-control-input" id="formsCheckboxDefault" />
                               <label className="custom-control-label" htmlFor="formsCheckboxDefault">Agregar a todas las localidades</label>
@@ -277,7 +343,7 @@ function Services() {
                                 <option key={data} value={data.localidadId}>{data.nombreLocalidad}</option>
                               ))}
                             </select>
-                          </div> : <div></div>}
+                          </div> : <div></div>} */}
                           <div className="form-group">
                             <select className="form-control" value={servInfo.categoria} onChange={(e) =>{ setServInfo({...servInfo, categoria: e.target.value}); getServicesCategories(e.target.value) } }>
                               {tiposCate.map(data => (
@@ -334,8 +400,8 @@ function Services() {
       try {
         await firebase.storage.ref(`/Servicios imagenes/${file.name}`).put(file)
         firebase.storage.ref("Servicios imagenes").child(file.name).getDownloadURL().then((urlI) => {
-          if(allLocalidades){
-            localidades.forEach(localidad=>{
+          if(localidadesVarias.length > 0){
+            localidadesVarias.forEach(localidad=>{
               uploadPart(id, localidad.localidadId, urlI)
             })
             setBtnMessage("Listo");

@@ -4,13 +4,19 @@ import React, {useState, useEffect} from 'react'
 import { Calendar, momentLocalizer } from 'react-big-calendar'
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import firebase from '../firebase/config'
+import {useHistory} from 'react-router-dom';
 
 const localizer = momentLocalizer(moment)
 moment.locale("es");
 
 function Agenda(){
+  const history = useHistory()
   // eslint-disable-next-line
   const [orders, setOrders] = useState([])
+  const [tiposCate, setTiposCate] = useState([])
+  const [cate, setCate] = useState("")
+  const [tipoServicios, setTipoServicios] = useState([])
+  const [serv, setServ] = useState("")
   // eslint-disable-next-line
   const [items, setItems] = useState([])
   const [myEventsList, setMyEventsList] = useState([])
@@ -19,26 +25,55 @@ function Agenda(){
 
   const getOrders = async(id) =>{
     let tipos = [];
-    await firebase.db.collection('Ordenes').where("tipoOrden", "==", "Servicio").where("aliadoId", "==", id)
-    .get().then(val => {
+    
+    const reference = firebase.db.collection('Ordenes').where("tipoOrden", "==", "Servicio").where("aliadoId", "==", id)
+
+    await reference.get().then(val => {
       val.docs.forEach(item=>{
         tipos.push(item.data())
       })
     })
     setOrders(tipos)
     getItems(tipos)
-    // console.log("Ordenes: " + tipos)
   }
   
   const getItems = async(ordenes) =>{
     let tipos = [];
     ordenes.forEach(async(orden)=>{
-      await firebase.db.collection('Ordenes').doc(orden.oid).collection("Items")
+      
+    const reference = firebase.db.collection('Ordenes').doc(orden.oid).collection("Items")
+    const serviceFilter = serv ? reference.where("titulo", "==", serv) : reference
+
+      await serviceFilter
       .get().then(val => {
         val.docs.forEach(item=>{
           tipos.push(item.data())
+          console.log(item.data())
         })
       })
+
+      //Filtrar las ordenes que solo estan disponibles
+      //Dependiendo del rol
+      // for(let i = 0; i < tipos.length; i++){
+      //   for(let i = 0; i < ser.length; i++){
+      //     if(ser[i] === tipos[i].titulo){
+      //       tipos2.push(tipos[i])
+      //     }
+      //   }
+      // }
+      
+      //Filtrar el rol del usuario y obtener todos los servicios
+      //para asi filtrar las ordenes principales sin filtro
+      // await firebase.db.collection("Aliados").doc(user.superAliadoId).collection("Roles").doc(user.rol).collection("Categorias").get().then((val)=>{
+      //   val.docs.forEach((doc)=>{
+      //     firebase.db.collection("Aliados").doc(user.superAliadoId).collection("Roles").doc(user.rol).collection("Categorias").doc(doc.id).collection("Servicios").get().then((val2)=>{
+      //       val2.docs.forEach((doc2)=>{
+      //         tipos.push(doc.id)
+      //       })
+      //     })
+      //   })
+      // })
+
       formatEvents(tipos)
       setItems(tipos)
     })
@@ -84,10 +119,33 @@ function Agenda(){
     day: "Día",
   }
 
+  function getCategories(){
+    let tipos = []
+    firebase.db.collection('CategoriasServicios').get().then(data=>{  
+      data.forEach(tipo=>{
+        tipos.push(tipo.id)
+        tipos.sort()
+      })
+      // tipos.pop("Todas")
+      setTiposCate(tipos)
+    });
+  }
+
+  function getServicesCategories(cate){
+    let tipos = [];
+    firebase.db.collection('CategoriasServicios').doc(cate).collection("Servicios").get().then(data=>{
+      data.docs.forEach(item=>{
+        tipos.push(item.id)
+      })
+      setTipoServicios(tipos)
+    });
+  }
+
   useEffect(() => {
     firebase.getCurrentUser().then((val)=>{
       setUser(val)
       getOrders(val.aliadoId)
+      getCategories()
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -95,7 +153,7 @@ function Agenda(){
     return (
       <div className="main-content-container container-fluid px-4">
 
-        <div className="page-header align-items-center justify-content-spacebetween row no-gutters py-2 px-4 my-4">
+        <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
           <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
             <div className="row align-items-center">
               <div className="col">
@@ -109,9 +167,32 @@ function Agenda(){
             </div>
           </div>
         </div>
-        
+        <div className="form-row align-items-center justify-content-space-between">
+            <div className="form-group mr-3">
+              <select className="form-control" value={cate} onChange={(e) =>{ setCate(e.target.value); getServicesCategories(e.target.value) } }>
+                {tiposCate.map(data => (
+                    <option key={data} value={data}>{data}</option>
+                ))}
+              </select>
+            </div>
+            {cate === "" ? <div></div> : <div className="form-group">
+              <select className="form-control" value={serv} onChange={e => setServ(e.target.value)}>
+                {tipoServicios.map(data => (
+                    <option key={data} value={data}>{data}</option>
+                ))}
+              </select>
+            </div>}
+          <div className="ml-3 form-group">
+            <button className="btn btn-primary" onClick={()=>{getOrders(user.aliadoId)}}>Buscar <i className="material-icons">search</i></button>
+          </div>
+        </div>
         <Calendar
-          onSelectEvent={(e)=>{showClient(e.user)}}
+          onSelectEvent={(e)=>{
+            history.push({
+              pathname: "/client", 
+              state: { clienteId: e.user }
+            })
+          }}
           views={{month: true, week: true, day: true}}
           localizer={localizer}
           events={myEventsList}
