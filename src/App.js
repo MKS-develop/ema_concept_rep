@@ -17,10 +17,10 @@ import Localitys from './pages/Localitys/Localitys';
 import AddServices from './pages/Localitys/AddServices';
 import Resume from './pages/Resume/Resume';
 import Orders from './pages/Orders/Orders';
+import Order from './pages/Orders/Order';
 import Clients from './pages/Clients/Clients';
+import Client from './pages/Clients/Client';
 import History from './pages/Atention/History';
-import Client from './pages/Clients';
-import OrderClient from './pages/Orders/OrderClient';
 import Messages from './pages/Messages';
 import Prueba from './pages/Pruebas';
 import Prueba2 from './pages/Pruebas2';
@@ -70,8 +70,8 @@ function App() {
                 <PrivateRoute exact path="/" component={Home} />
                 <PrivateRoute exact path="/profile" component={Profile} />
                 <PrivateRoute exact path="/bank" component={DataBank} />
-                <PrivateRoute exact path="/adoption" component={Adoption} />
-                <PrivateRoute exact path="/proceedings" component={Proceedings} />
+                {/* <PrivateRoute exact path="/adoption" component={Adoption} /> */}
+                {/* <PrivateRoute exact path="/proceedings" component={Proceedings} /> */}
                 <PrivateRoute exact path="/pruebas" component={Prueba} />
                 <PrivateRoute exact path="/pruebas2" component={Prueba2} />
                 <PrivateRoute exact path="/petpoints" component={PetPoints} />
@@ -80,14 +80,13 @@ function App() {
                 <PrivateRoute exact path="/create-role" component={CreateRole} />
                 <PrivateRoute exact path="/create-role/addservices" component={AddServicesRoles} />
                 <PrivateRoute exact path="/create-role/addproducts" component={AddProductsRoles} />
-                <PrivateRoute path="/orders" exact component={Orders}/>
                 <PrivateRoute path="/agenda" exact component={Agenda}/>
                 <PrivateRoute path="/client/pet/history" exact component={History}/>
+                <PrivateRoute path="/clients/client" exact component={Client}/>
                 <PrivateRoute path="/configuration" exact component={Configuration}/>
                 <PrivateRoute path="/orders" exact component={Orders}/>
+                <PrivateRoute path="/orders/order" exact component={Order}/>
                 <PrivateRoute path="/clients" exact component={Clients}/>
-                <PrivateRoute path="/client" exact component={Client}/>
-                <PrivateRoute path="/order/client" exact component={OrderClient}/>
                 <PrivateRoute path="/configuration/services" exact component={Services}/>
                 <PrivateRoute path="/configuration/services/agenda" exact component={AgendaServiceCreation}/>
                 <PrivateRoute path="/promotions/agenda" exact component={AgendaPromoCreation}/>

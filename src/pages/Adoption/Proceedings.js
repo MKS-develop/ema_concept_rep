@@ -52,7 +52,7 @@ function Proceedings() {
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                     <div className="row align-items-center">
                         <div className="col">
-                            <p className="page-title bold"><Link to="/adoption" className="page-title light">Adopción y apadrinamiento </Link> Expediente</p>
+                            <p className="page-title bold"><Link to="/adoption" className="page-title light">Adopción y apadrinamiento </Link> {'>'} Expediente</p>
                         </div>
                     </div>
                 </div>
@@ -81,7 +81,7 @@ function Proceedings() {
                             animateYearScrolling
                           />
                         </div>
-                        <p onClick={()=>{save("a")}} className="btn btn-outline-primary col-lg-3 mb-0">
+                        <p onClick={()=>{fechaPeso === null || valores.peso === "" ? console.log("Error") : save("a")}} className={`btn ${fechaPeso === null || valores.peso === "" ? "btn-disabled" : "btn-outline-primary"} col-lg-3 mb-0`}>
                             <i className="material-icons">save</i>
                         </p>
                     </div>
@@ -101,7 +101,7 @@ function Proceedings() {
                             animateYearScrolling
                           />
                         </div>
-                        <p onClick={()=>{save("b")}} className="btn btn-outline-primary col-lg-3 mb-0">
+                        <p onClick={()=>{fechaTemperatura === null || valores.temperatura === "" ? console.log("Error") : save("b")}} className={`btn ${fechaTemperatura === null || valores.temperatura === "" ? "btn-disabled" : "btn-outline-primary"} col-lg-3 mb-0`}>
                             <i className="material-icons">save</i>
                         </p>
                     </div>
@@ -121,7 +121,7 @@ function Proceedings() {
                             animateYearScrolling
                           />
                         </div>
-                        <p onClick={()=>{save("c")}} className="btn btn-outline-primary col-lg-3 mb-0">
+                        <p onClick={()=>{fechaCastrado === null || valores.castrado === "" ? console.log("Error") : save("c")}} className={`btn ${fechaCastrado === null || valores.castrado === "" ? "btn-disabled" : "btn-outline-primary"} col-lg-3 mb-0`}>
                             <i className="material-icons">save</i>
                         </p>
                     </div>
@@ -141,7 +141,7 @@ function Proceedings() {
                             animateYearScrolling
                           />
                         </div>
-                        <p onClick={()=>{save("d")}} className="btn btn-outline-primary col-lg-3 mb-0">
+                        <p onClick={()=>{fechaDesparacitacion === null || valores.desparacitado === "" ? console.log("Error") : save("d")}} className={`btn ${fechaDesparacitacion === null || valores.desparacitado === "" ? "btn-disabled" : "btn-outline-primary"} col-lg-3 mb-0`}>
                             <i className="material-icons">save</i>
                         </p>
                     </div>
@@ -163,7 +163,7 @@ function Proceedings() {
                             animateYearScrolling
                           />
                         </div>
-                        <p onClick={()=>{save("e")}} className="btn btn-outline-primary col-lg-3 mb-0">
+                        <p onClick={()=>{fechaVacunas === null || valores.vacuna === "" ? console.log("Error") : save("e")}} className={`btn ${fechaVacunas === null || valores.vacuna === "" ? "btn-disabled" : "btn-outline-primary"} col-lg-3 mb-0`}>
                             <i className="material-icons">save</i>
                         </p>
                     </div>
@@ -183,7 +183,7 @@ function Proceedings() {
                             animateYearScrolling
                           />
                         </div>
-                        <p onClick={()=>{save("f")}} className="btn btn-outline-primary col-lg-3 mb-0">
+                        <p onClick={()=>{fechaAlergias === null || valores.alergia === "" ? console.log("Error") : save("f")}} className={`btn ${fechaAlergias === null || valores.alergia === "" ? "btn-disabled" : "btn-outline-primary"} col-lg-3 mb-0`}>                        
                             <i className="material-icons">save</i>
                         </p>
                     </div>
@@ -203,7 +203,7 @@ function Proceedings() {
                             animateYearScrolling
                           />
                         </div>
-                        <p onClick={()=>{save("g")}} className="btn btn-outline-primary col-lg-3 mb-0">
+                        <p onClick={()=>{fechaPatologia === null || valores.patologia === "" ? console.log("Error") : save("g")}} className={`btn ${fechaPatologia === null || valores.patologia === "" ? "btn-disabled" : "btn-outline-primary"} col-lg-3 mb-0`}>
                             <i className="material-icons">save</i>
                         </p>
                     </div>

@@ -36,19 +36,7 @@ function Orders() {
       })
     }
 
-    const handleClick = async(order) =>{
-      let item = {}
-      if(order.tipoOrden === "Servicio" || order.tipoOrden === "Videoconsulta" || order.localidadId === undefined ){
-        let reference = (await firebase.db.collection("Ordenes").doc(order.oid).collection("Items").get()).docs
-        item = reference[0].data()
-        try {
-          firebase.db.collection("Localidades").doc(order.localidadId).collection("Servicios").doc(item.servicioid).get().then((doc)=>{
-            setOrderSell(doc.data())
-          })
-        }catch(e){
-          console.log(e)
-        }
-      }
+    
       // else{
       //   try {
       //     firebase.db.collection("Productos").doc(order.productoId).get().then((doc)=>{
@@ -58,7 +46,6 @@ function Orders() {
       //     console.log(e)
       //   }
       // }
-    }
 
     useEffect(() => {
         firebase.getCurrentUser().then((val)=>{
@@ -68,12 +55,7 @@ function Orders() {
     }, [])
 
     return (
-
-        <div className="main-content-container container-fluid px-4">
-          {order.oid === undefined
-          ? 
-          <div>
-
+      <div className="main-content-container container-fluid px-4">
               <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                   <div className="row align-items-center">
@@ -135,7 +117,12 @@ function Orders() {
                         orders.length > 0 ? orders.map(order=>{
                           let oc = moment(order.createdOn.toDate()).format("ddd, MMM D YYYY")
                           return(
-                            <div onClick={() => {setOrder(order); handleClick(order)}} key={order.oid} className="mb-2 row order-child">
+                            <div onClick={() => {
+                              history.push({
+                                pathname: "/orders/order",
+                                state: {oid: order.oid}
+                              })
+                            }} key={order.oid} className="mb-2 row order-child">
                               <div className="col-md-2 color-primary">
                                 <p className="mb-0">{order.user}</p>
                               </div>
@@ -163,132 +150,8 @@ function Orders() {
                     </div>
                   </div>
               </div>
-            </div>
-            
-            
-            : <div>
-
-              <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
-                <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
-                  <div className="row align-items-center">
-                    <div className="col">
-                      <p onClick={()=>{setOrder({})}} className="page-title"><i className="material-icons">arrow_back</i> Regresar</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-12 col-sm-1 mb-0">
-                  <div className="row align-items-center justify-content-space-around">
-                    <i className="material-icons color-white display-5">help_outline</i>
-                  </div>
-                </div>
-              </div>
-              <h3 className="mb-5">Detalle de la órden</h3>
-              <div className="row no-gutters">
-                <div className="row col-lg-8">
-                  <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Nombre del cliente</p>
-                    <p>{order.user}</p>
-                  </div>
-                  <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Status</p>
-                    <p>{order.status}</p>
-                  </div>
-                  <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Fecha</p>
-                    <p>{order.fecha}</p>
-                  </div>
-                  <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Monto</p>
-                    <p>S/{order.precio}</p>
-                  </div>
-                  <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Nro. de órden</p>
-                    <p>{order.oid}</p>
-                  </div>
-                  <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Tipo de órden</p>
-                    <p>{order.tipoOrden}</p>
-                  </div>
-                </div>
-                <div className="col-lg-4">
-                { order.tipoOrden === "Servicio" || order.tipoOrden === "Videoconsulta" || orderSell !== undefined ? 
-                  <div className="card"> 
-                    <div className="card-header-img-width">
-                      <img src={orderSell.urlImagen} alt=""/>
-                    </div>
-                    <div className="px-4">
-                      <div className="card-claim-box">
-                        <p className="card-claim-title">{orderSell.categoria}</p>
-                        <p className="card-claim-text">{orderSell.titulo}</p>
-                      </div>
-                      <div className="card-claim-box">
-                        <p className="card-claim-title">Precio del servicio</p>
-                        <p className="card-claim-text">S/{orderSell.precio}</p>
-                      </div>
-                      <div className="card-claim-box">
-                        <p className="card-claim-title">Descripción del servicio</p>
-                        <p className="card-claim-text">{orderSell.descripcion}</p>
-                      </div>
-                      <div className="card-claim-box">
-                        <p className="card-claim-title">Condiciones del servicio</p>
-                        <p className="card-claim-text">{orderSell.condiciones}</p>
-                      </div>
-                    </div>
-                  </div> 
-                  :  
-                  // <div className="card">
-                  //     <div className="card-header-img">
-                  //       <img src={orderSell.urlImagen} alt=""/>
-                  //     </div>
-                  //     <div className="px-4">
-                  //       <div className="card-claim-box">
-                  //         <p className="card-claim-text">{orderSell.titulo}</p>
-                  //       </div>
-                  //       <div className="card-claim-box">
-                  //         <p className="card-claim-title">Precio del producto</p>
-                  //         <p className="card-claim-text">S/{orderSell.precio}</p>
-                  //       </div>
-                  //       <div className="card-claim-box">
-                  //         <p className="card-claim-title">Cantidad del producto</p>
-                  //         <p className="card-claim-text">{orderSell.cantidad}</p>
-                  //       </div>
-                  //     </div>
-                  //   </div>
-                  <div></div>
-                  }
-                </div>
-              </div>
-              <div className="row mb-5">
-                <div className="col-lg-5">
-                  <button onClick={()=>{
-                    history.push({
-                      pathname: "/order/client", 
-                      state: { clienteId: order.uid }
-                    })
-                  }} className="btn btn-primary btn-block">Ver la información del cliente</button>
-                </div>
-                { order.status === "Por confirmar" || order.status === "Por Confirmar" ? <div className="col-lg-5">
-                  <button onClick={()=>{ updateOrder() }} className="btn btn-primary btn-block">Confirmar orden</button>
-                </div> : <div></div> }
-              </div>
-
-            </div>}
-
           </div>
     )
-
-    async function updateOrder(){
-      try {
-        await firebase.db.collection("Ordenes").doc(order.oid).update({
-          status: "Confirmada",
-          statusCita: "Confirmada"
-        })
-        window.location.href = "/orders"
-
-      }catch (e){
-        console.log(e)
-      }
-    }
 
 }
 

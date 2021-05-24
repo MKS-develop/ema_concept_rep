@@ -77,7 +77,7 @@ function Agenda(){
       formatEvents(tipos)
       setItems(tipos)
     })
-    // console.log("Items: " + tipos)
+    console.log("Items: " + tipos)
   }
   
   const showClient = async(user) =>{
@@ -98,7 +98,7 @@ function Agenda(){
       date.setHours(hourL[0])
       date.setMinutes(hourL[1])
       var event = {
-        user: item.uid,
+        oid: item.oid,
         title: item.titulo + " - " + item.nombre,
         start: item.date === null ? moment().toDate() : date,
         end: item.date === null ? moment().toDate() : moment(date).add(30, "minutes").toDate(),
@@ -189,8 +189,8 @@ function Agenda(){
         <Calendar
           onSelectEvent={(e)=>{
             history.push({
-              pathname: "/client", 
-              state: { clienteId: e.user }
+              pathname: "/orders/order", 
+              state: { oid: e.oid }
             })
           }}
           views={{month: true, week: true, day: true}}

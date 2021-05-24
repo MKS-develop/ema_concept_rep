@@ -947,6 +947,10 @@ select.form-control-lg:not([size]):not([multiple]),
   transition: all 250ms cubic-bezier(0.27, 0.01, 0.38, 1.06);
 }
 
+.btn-no-padding-x{
+  padding: 0.75rem 0rem!important;
+}
+
 .btn:hover,
 .btn.hover {
   cursor: pointer;
@@ -3224,6 +3228,17 @@ input.MuiInputBase-input{
   height: 70vh;
 }
 
+.pet-client-card{
+  cursor: pointer;
+  display: block;
+  padding:0.8rem 0rem;
+  border-radius:0.4rem;
+  text-align:center;
+  background-color:#5e40a054;
+  color:var(--primary);
+}
+
+
 .pet-img {
   width: 100%;
   height: 32vh;
@@ -3259,6 +3274,10 @@ input.MuiInputBase-input{
   height: 15vh;
   object-fit: cover;
   border-radius: 20rem;
+}
+
+.h-fit-content{
+  height:fit-content;
 }
 
 .antecedentes-box {
@@ -4687,6 +4706,21 @@ button.list-group-item-dark.active {
   height: 100vh;
   z-index: 1111;
   background-color: #24242485;
+}
+
+.cc-modal.cc-modal-scroll{
+  overflow: auto;
+  height: 90%;
+  width: 75%;
+  padding: 2rem;
+}
+
+.cc-modal.cc-modal-scroll .cc-modal-body{
+  height: fit-content;
+  width: 100%;
+  display: flex;
+  position: relative;
+  padding: 1rem 0rem;
 }
 
 .cc-modal {
@@ -7468,4 +7502,226 @@ html .ql-toolbar .ql-picker .ql-picker-options {
 
 .error__content p {
   color: #818EA3;
+}
+
+/* Chats */
+.chats-container {
+  cursor: pointer;
+  display: flex;
+  height: 10vh;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  transition: all ease-in-out .1s;
+  border-radius:0.6rem;
+}
+
+.chat-header {
+  width: 100%;
+  background-color: #fff;
+  z-index: 1;
+}
+
+.chat-flow{
+  height: 55vh;
+  overflow: scroll;
+  overflow-x: hidden;
+}
+
+.full-height-margin{
+  height: 10vh;
+}
+
+.chats-container:hover,
+.chats-container.active
+ {
+  background-color: #B2D7D6;
+}
+
+.chats-container-img {
+  width: 50px;
+  height: 50px;
+  border-radius: 100px;
+  overflow: hidden;
+  display: block;
+  position: relative;
+}
+
+.chats-container-img img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  object-position: center;
+}
+
+.chats-container-name {
+  margin-bottom: 0.3rem;
+  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.chats-container-msg {
+  margin-bottom: 0.3rem;
+  color: var(--gray);
+  font-size: 0.8rem;
+  font-weight: 300;
+  width: 100%;
+  height: 19px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.message-container-me {
+  margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.message-container-me p {
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
+  width: fit-content;
+  color: var(--white);
+  background: var(--primary);
+}
+
+.message-container-other {
+  margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.message-container-other p {
+  padding: 0.5rem 0.8rem;
+  border-radius: 5px;
+  width: fit-content;
+  color: var(--white);
+  background: var(--gray);
+}
+
+.chats-container-text {
+  display: block;
+  position: relative;
+  padding: 0rem 0.8rem;
+  box-sizing: border-box;
+  flex:auto;
+}
+
+.chats-container-hour {
+  margin-bottom: 0.3rem;
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.chat-input-message {
+  flex: auto;
+  border: 0;
+  padding: 0rem 1rem;
+}
+
+.chat-input-message:focus {
+  outline: none;
+}
+
+
+.episodes-scroll-wrapper {
+  height: 60vh;
+  overflow: auto;
+}
+
+.episodes-container {
+  margin-top: 1rem;
+  background-color: var(--white);
+  border-radius: 1rem;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.episode-header {
+  background: var(--secondary);
+  color: var(--white);
+  text-align: center;
+  padding: 0.4rem 0rem;
+  border-radius: 1rem 1rem 0rem 0rem;
+}
+
+.episode-body {
+  padding: 1rem 1rem;
+}
+
+.episode-title {
+  margin-bottom: 0.1rem;
+  font-size: 0.8rem;
+  color: var(--secondary);
+  font-weight: 600;
+}
+
+.episode-text {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+.treatment-header {
+  text-align: center;
+  padding: 1rem 0rem;
+  color: var(--primary);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.treatment-body {
+  text-align: center;
+}
+
+/* Change color of the agenda */
+
+div[title*="Atendido"]{
+  background-color:grey!important;
+  padding: 2px 5px!important;
+  border-radius: 5px!important;
+}
+
+div[title*="En atención"]{
+  background-color:#28b328!important;
+  padding: 2px 5px!important;
+  border-radius: 5px!important;
+}
+
+.btn-disabled{
+  background-color: #868e9629;
+}
+
+/* Custom dropdown */
+
+.custom-dropdown {
+  width: 210px;
+  position: relative;
+}
+
+.custom-dropdown-box {
+  position: absolute;
+  z-index: 1;
+  max-height: 35vh;
+  overflow: auto;
+  width: 210px;
+  box-shadow: 0px 20px 40px -23px #24242496;
+}
+
+.custom-dropdown-option {
+  background-color: var(--white);
+  color: var(--primary);
+  padding: 0.3rem 1rem;
+  font-size: 0.9rem;
+  transition: all ease-in-out .1s;
+}
+
+.custom-dropdown-option:hover {
+  background-color: var(--primary);
+  color:var(--white);
 }

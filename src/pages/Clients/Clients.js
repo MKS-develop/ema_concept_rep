@@ -9,6 +9,7 @@ function Clients() {
     const [nameValue, setNameValue] = useState(null);
     const [nroValue, setNroValue] = useState(null);
     const [clients, setClients] = useState([])
+    const [clientPets, setClientPets] = useState([])
     const [clientsSearch, setClientsSearch] = useState([])
     const [orders, setOrders] = useState([])
     const [user, setUser] = useState({})
@@ -76,6 +77,20 @@ function Clients() {
       setClientsSearch(tipos)
     }
 
+    const getPets = async(mid)=>{
+      let tipos = []
+      try{
+        await firebase.db.collection("Mascotas").where("uid", "==", mid).get().then((val)=>{
+          val.docs.forEach((doc)=>{
+            tipos.push(doc.data())
+          })
+          setClientPets(tipos)
+        })
+      }catch(e){
+        console.log(`Error: ${e}`)
+      }
+    }
+
     useEffect(() => {
         firebase.getCurrentUser().then((val)=>{
           setUser(val)
@@ -86,8 +101,6 @@ function Clients() {
     return (
 
         <div className="main-content-container container-fluid px-4">
-          {client.uid === undefined
-          ? 
           <div>
 
               <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
@@ -126,7 +139,12 @@ function Clients() {
                         clientsSearch.length > 0 && nameValue ? 
                         clientsSearch.length > 0 ? clientsSearch.map(client=>{
                           return(
-                            <div onClick={() => setClient(client)} key={client.uid} className="mb-4 row client-child align-items-center">
+                            <div onClick={() => {
+                              history.push({
+                                pathname: "/clients/client",
+                                state: {uid: client.uid}
+                              })
+                            }} key={client.uid} className="mb-4 row client-child align-items-center">
                               <img className="client-avatar-preview rounded-circle mr-2" src={client.url ?? "cargando"} alt="User Avatar"/>
                               <div className="col-md-2 color-primary">
                                 <p className="mb-0">{client.user}</p>
@@ -137,7 +155,12 @@ function Clients() {
                         :
                         clients.length > 0 ? clients.map(client=>{
                           return(
-                            <div onClick={() => setClient(client)} key={client.uid} className="mb-4 row client-child align-items-center">
+                            <div onClick={() => {
+                              history.push({
+                                pathname: "/clients/client",
+                                state: {uid: client.uid}
+                              })
+                            }} key={client.uid} className="mb-4 row client-child align-items-center">
                               <img className="client-avatar-preview rounded-circle mr-2" src={client.url ?? "cargando"} alt="User Avatar"/>
                               <div className="col-md-2 color-primary">
                                 <p className="mb-0">{client.user}</p>
@@ -150,49 +173,6 @@ function Clients() {
                   </div>
               </div>
             </div>
-            
-            
-            : <div>
-
-              <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
-                <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
-                  <div className="row align-items-center">
-                    <div className="col">
-                      <p onClick={()=>{setClient({})}} className="page-title"><i className="material-icons">arrow_back</i> Regresar</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-12 col-sm-1 mb-0">
-                  <div className="row align-items-center justify-content-space-around">
-                    <i className="material-icons color-white display-5">help_outline</i>
-                  </div>
-                </div>
-              </div>
-              <h3 className="mb-5">Cliente</h3>
-              <div className="row">
-                <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Nombre del cliente</p>
-                    <p>{client.nombre} {client.apellido}</p>
-                </div>
-                <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Sexo</p>
-                    <p>{client.genero}</p>
-                </div>
-                <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Dirección</p>
-                    <p>{client.direccion}</p>
-                </div>
-                <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Teléfono</p>
-                    <p>{client.telefono}</p>
-                </div>
-                <div className="col-lg-4">
-                    <p className="mb-0 bold color-primary">Email</p>
-                    <p>{client.email}</p>
-                </div>
-              </div>
-
-            </div>}
 
           </div>
     )

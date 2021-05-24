@@ -9,7 +9,7 @@ function Sidebar() {
             <nav className="navbar align-items-stretch navbar-light bg-white flex-md-nowrap border-bottom p-0">
               <a className="navbar-brand w-100 mr-0" href="/">
                 <div className="m-auto navbar-img">
-                  <img id="main-logo" className="d-inline-block align-top mr-1" src="../images/logo.png" alt="MKS Salud Aliados Aliados"/>
+                  <img id="main-logo" className="d-inline-block align-top mr-1" src="/images/logo.png" alt="MKS Salud Aliados Aliados"/>
                 </div>
               </a>
               <a href="/" className="toggle-sidebar d-sm-inline d-md-none d-lg-none">
@@ -37,12 +37,12 @@ function Sidebar() {
                   <span>Agenda</span>
                 </NavLink>
               </li>
-              <li className="nav-item">
+              {/* <li className="nav-item">
                 <NavLink className="nav-link" exact to="/adoption" activeClassName="active">
                   <i className="material-icons">pets</i>
                   <span>Adopción y apadrinamiento</span>
                 </NavLink>
-              </li>
+              </li> */}
               <li className="nav-item">
                 <NavLink className="nav-link" exact to="/clients" activeClassName="active">
                   <i className="material-icons">people</i>
