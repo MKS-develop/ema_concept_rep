@@ -331,9 +331,9 @@ function History() {
         let patologias = []
         let desparacitaciones = []
         try {
-            firebase.db.collection("Mascotas").doc(mid).get().then((val)=>{
+            firebase.db.collection( data.state.isOwner ? "Dueños" : "Mascotas").doc(mid).get().then((val)=>{
                 setPet(val.data())
-                setFechaNac(moment(val.data().fechanac.toDate()).format(`D MMMM, YYYY`).toString())
+                setFechaNac(moment( data.state.isOwner ? val.data().fechaNacimiento.toDate() : val.data().fechanac.toDate()).format(`D MMMM, YYYY`).toString())
                 let tiposVacunas = []
                 let tiposAlergias = []
                 let tiposPatologias = []
@@ -754,7 +754,7 @@ function History() {
                                       pathname: "/clients/client",
                                       state: {uid: data.state.uid}
                                     })
-                                }} className="page-title light">Cliente</span>{' > '}Historia de la mascota</p>
+                                }} className="page-title light">Cliente</span>{' > '}Historia de la persona</p>
                         </div>
                     </div>
                 </div>
@@ -770,7 +770,7 @@ function History() {
                 <div className="row box-info-wrapper align-items-center justify-content-spacebetween">
                     <div className="col-lg-4">
                         <div className="box-info text-center">
-                            <img src={pet.petthumbnailUrl} className="box-info-img"/>
+                            <img src={data.state.isOwner ? pet.url : pet.petthumbnailUrl} className="box-info-img"/>
                         </div>
                     </div>
                     <div className="col-lg-4">

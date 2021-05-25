@@ -45,6 +45,7 @@ function ClientInfo() {
     useEffect(() => {
         firebase.getCurrentUser().then((val)=>{
           setUser(val)
+          
         })
         if(data.state !== undefined){
             getClient(data.state.uid)
@@ -70,7 +71,19 @@ function ClientInfo() {
                   </div>
                 </div>
               </div>
-              <h3 className="mb-5">Cliente</h3>
+              <div className="row mb-5">
+                <h3 className="mb-0">Cliente</h3>
+                <div onClick={
+                  ()=>{
+                    history.push({
+                      pathname: "/client/pet/history",
+                      state: {mid: data.state.uid, uid: data.state.uid, isOwner: true }
+                    })
+                  }
+                } className="btn ml-5 btn-outline-primary">
+                  Atender
+                </div>
+              </div>
               <div className="row">
                 <div className="col-lg-4">
                     <p className="mb-0 bold color-primary">Nombre del cliente</p>

@@ -7725,3 +7725,11 @@ div[title*="En atención"]{
   background-color: var(--primary);
   color:var(--white);
 }
+
+#react-jitsi-frame {
+  display: block!important;
+}
+
+.leftwatermark.watermark{
+  visibility: hidden;
+}
