@@ -139,8 +139,14 @@ function History() {
     let todayDate = moment().format("ddd, MMM D YYYY").toString()
     const [success, setSuccess] = useState(false)
     const [sucessMessage, setSucessMessage] = useState("")
+
     const [fechaPeso, setFechaPeso] = useState(null)
     const [fechaTemperatura, setFechaTemperatura] = useState(null)
+    const [fechaTalla, setFechaTalla] = useState(null)
+    const [fechaFrecuenciaResp, setFechaFrecuenciaResp] = useState(null)
+    const [fechaFrecuenciaCard, setFechaFrecuenciaCard] = useState(null)
+    const [fechaPresionArterial, setFechaPresionArterial] = useState(null)
+    
     const [fechaCastrado, setFechaCastrado] = useState(null)
     const [fechaDesparacitacion, setFechaDesparacitacion] = useState(null)
     const [fechaVacunas, setFechaVacunas] = useState(null)
@@ -199,10 +205,6 @@ function History() {
     
     const [anteFisicoValues, setAnteFisicoValues] = useState({
         inspeccionGeneral: "",
-        mucosas: "",
-        tiempoLlenadoCapilar: "",
-        exploracionLinfonodulosSuperficiales: "",
-        estadoHidratacion: "",
     })
     
     const [anteAparatosValues, setAnteAparatosValues] = useState({
@@ -219,7 +221,7 @@ function History() {
     })
 
     const [episodioValues, setEpisodioValues] = useState({
-        datalleConsulta: "",
+        detalleConsulta: "",
         diagnosticoConsulta: "",
         comentariosConsulta: "",
         instruccionesAdicionalesConsulta: "",
@@ -227,13 +229,12 @@ function History() {
     })
     
     const [valores, setValores] = useState({
+        talla: "",
         peso: "",
         temperatura: "",
-        castrado: "",
-        desparacitado: "",
-        vacuna: "",
-        alergia: "",
-        patologia: "",
+        frecuenciaResp: "",
+        frecuenciaCard: "",
+        presionArt: "",
     })
 
     const [antecedentesValues, setAntecedentesValues] = useState({
@@ -478,6 +479,16 @@ function History() {
     //   }
     // }
 
+    const SuccessComponent = ({msg}) => {
+        return (
+            <div className="success-alert">
+                <span className="material-icons mr-2">done</span>
+                {msg}
+                <div onClick={()=>{setSuccess(false)}} className="material-icons ml-2">close</div>
+            </div>
+        )
+    }
+
     useEffect(() => {
         firebase.getCurrentUser().then((val)=>{
           setUser(val)
@@ -488,8 +499,9 @@ function History() {
     return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
         <div className="main-content-container container-fluid px-4">
-            { episodeShow ? <div className="cc-modal-wrapper fadeIn">
-              <div className="cc-modal">
+            {success && <SuccessComponent msg={sucessMessage === "" ? "Consulta guardada exitosamente" :  sucessMessage}/>}
+            { episodeShow && <div className="cc-modal-wrapper fadeIn">
+              <div className="cc-modal cc-modal-scroll">
                 <div className="cc-modal-header mb-2">
                   <div className="no-gutters mb-3 row align-items-center justify-content-spacebetween">
                     <h3 className="mb-0">Información de la consulta</h3>
@@ -512,8 +524,8 @@ function History() {
                             <p>{episode.comentariosConsulta}</p>
                         </div>
                         <div>
-                            <p className="color-primary mb-1">{episode.datalleConsulta === "" ? "" : "Detalle de la consulta:"}</p>
-                            <p>{episode.datalleConsulta}</p>
+                            <p className="color-primary mb-1">{episode.detalleConsulta === "" ? "" : "Detalle de la consulta:"}</p>
+                            <p>{episode.detalleConsulta}</p>
                         </div>
                         <div>
                             <p className="color-primary mb-1">{episode.diagnosticoConsulta === "" ? "" : "Diagnostico de la consulta:"}</p>
@@ -522,6 +534,51 @@ function History() {
                         <div>
                             <p className="color-primary mb-1">{episode.instruccionesAdicionalesConsulta === "" ? "" : "Instrucciones adicionales de la consulta:"}</p>
                             <p>{episode.instruccionesAdicionalesConsulta}</p>
+                        </div>
+                        <div>
+                            <p className="color-primary mb-1">{episode.ordenesEstudio.length > 0 && "Órdenes de estudio:"}</p>
+                            <div className="row no-gutters">
+                                {episode.ordenesEstudio.map((mc)=>{
+                                    return (
+                                        <p className="pill-2">{mc}</p>
+                                    )
+                                })}
+                            </div>
+                        </div>
+                        <div>
+                            <p className="color-primary mb-1">{episode.signosVitales.talla !== "" 
+                            && episode.signosVitales.peso !== "" 
+                            && episode.signosVitales.temperatura !== "" 
+                            && episode.signosVitales.frecuenciaResp !== "" 
+                            && episode.signosVitales.frecuenciaCard !== "" 
+                            && episode.signosVitales.presionArt !== "" 
+                            ? "Signos vitales:" : ""}</p>
+                            {episode.signosVitales.talla && <p className="mb-1" >Talla: {episode.signosVitales.talla} - {moment(episode.signosVitalesFechas[0].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
+                            {episode.signosVitales.peso && <p className="mb-1" >Peso: {episode.signosVitales.peso} - {moment(episode.signosVitalesFechas[1].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
+                            {episode.signosVitales.temperatura && <p className="mb-1" >Temperatura: {episode.signosVitales.temperatura} - {moment(episode.signosVitalesFechas[2].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
+                            {episode.signosVitales.frecuenciaResp && <p className="mb-1" >Frecuencia respiratoria: {episode.signosVitales.frecuenciaResp} - {moment(episode.signosVitalesFechas[3].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
+                            {episode.signosVitales.frecuenciaCard && <p className="mb-1" >Frecuencia cardiaca: {episode.signosVitales.frecuenciaCard} - {moment(episode.signosVitalesFechas[4].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
+                            {episode.signosVitales.presionArt && <p className="mb-1" >Presion arterial: {episode.signosVitales.presionArt} - {moment(episode.signosVitalesFechas[5].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
+                        </div>
+                        <div>
+                            <p className="color-primary mt-3 mb-1">{episode.tratamientos.length > 0 && "Tratamientos:"}</p>
+                            <div className="row no-gutters">
+                                {episode.tratamientos.map((tratamiento, i)=>{
+                                    return (
+                                        <div className="border-bottom" >                                        
+                                            <p className="mb-0">{tratamiento.nombre}</p>
+                                            <div className="row col-lg-12" key={i}>
+                                                <p className="mb-0 mr-2">Cantidad: {tratamiento.cant}, </p>
+                                                <p className="mb-0 mr-2">Durante: {tratamiento.durante}, </p>
+                                                <p className="mb-0 mr-2">Frecuencia: {tratamiento.frecuencia}, </p>
+                                                <p className="mb-0 mr-2">Unidad: {tratamiento.unidad}, </p>
+                                                <p className="mb-0 mr-2">Via: {tratamiento.via}, </p>
+                                            </div>
+                                            <p className="mb-0">{tratamiento.notaTratamiento}</p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -534,8 +591,8 @@ function History() {
                   </button>
                 </div>
               </div>
-            </div> : <div></div> }
-            { antecedentesModal ? <div className="cc-modal-wrapper fadeIn">
+            </div>}
+            { antecedentesModal && <div className="cc-modal-wrapper fadeIn">
               <div className="cc-modal cc-modal-scroll">
                 <div className="cc-modal-header mb-2">
                   <div className="no-gutters mb-3 row align-items-center justify-content-spacebetween">
@@ -662,8 +719,8 @@ function History() {
                   </button>
                 </div>
               </div>
-            </div> : <div></div> }
-            { examFisi ? <div className="cc-modal-wrapper fadeIn">
+            </div>}
+            { examFisi && <div className="cc-modal-wrapper fadeIn">
               <div className="cc-modal cc-modal-scroll">
                 <div className="cc-modal-header mb-2">
                   <div className="no-gutters mb-3 row align-items-center justify-content-spacebetween">
@@ -747,13 +804,13 @@ function History() {
                   <button onClick={()=>{setExamFisi(false)}} className={`btn btn-disabled`}>
                     Cancelar
                   </button>
-                  <button onClick={()=>{updateAntecedentes(); setExamFisi(false);}} className={`btn btn-primary`}>
+                  <button onClick={()=>{setExamFisi(false);}} className={`btn btn-primary`}>
                     Guardar
                   </button>
                 </div>
               </div>
-            </div> : <div></div> }
-            { signosVitalesStatus ? <div className="cc-modal-wrapper fadeIn">
+            </div>}
+            { signosVitalesStatus && <div className="cc-modal-wrapper fadeIn">
               <div className="cc-modal">
                 <div className="cc-modal-header mb-2">
                   <div className="no-gutters mb-3 row align-items-center justify-content-spacebetween">
@@ -763,7 +820,7 @@ function History() {
                 <div className="cc-modal-body">
                     <div className="col-lg-12 px-5">
                         <div className="row mb-4 align-items-center justify-content-spacebetween">
-                            <input onChange={(e)=>{setValores({...valores, peso: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Talla (mts)"/>
+                            <input value={valores.talla} onChange={(e)=>{setValores({...valores, talla: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Talla (mts)"/>
                             <div className="col-lg-5 spe-input">
                             <DatePicker
                                 className="col-lg-12"
@@ -773,8 +830,8 @@ function History() {
                                 label=""
                                 okLabel="Listo"
                                 cancelLabel="Cancelar"
-                                value={fechaPeso}
-                                onChange={setFechaPeso}
+                                value={fechaTalla}
+                                onChange={setFechaTalla}
                                 animateYearScrolling
                             />
                             </div>
@@ -814,7 +871,7 @@ function History() {
                             </div>
                         </div>
                         <div className="row mb-4 align-items-center justify-content-spacebetween">
-                            <input onChange={(e)=>{setValores({...valores, peso: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Frecuencia respiratoria"/>
+                            <input value={valores.frecuenciaResp} onChange={(e)=>{setValores({...valores, frecuenciaResp: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Frecuencia respiratoria"/>
                             <div className="col-lg-5 spe-input">
                             <DatePicker
                                 className="col-lg-12"
@@ -824,14 +881,14 @@ function History() {
                                 label=""
                                 okLabel="Listo"
                                 cancelLabel="Cancelar"
-                                value={fechaPeso}
-                                onChange={setFechaPeso}
+                                value={fechaFrecuenciaResp}
+                                onChange={setFechaFrecuenciaResp}
                                 animateYearScrolling
                             />
                             </div>
                         </div>
                         <div className="row mb-4 align-items-center justify-content-spacebetween">
-                            <input onChange={(e)=>{setValores({...valores, temperatura: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Frecuencia cardiaca"/>
+                            <input value={valores.frecuenciaCard} onChange={(e)=>{setValores({...valores, frecuenciaCard: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Frecuencia cardiaca"/>
                             <div className="col-lg-5 spe-input">
                             <DatePicker
                                 className="col-lg-12"
@@ -841,14 +898,14 @@ function History() {
                                 label=""
                                 okLabel="Listo"
                                 cancelLabel="Cancelar"
-                                value={fechaTemperatura}
-                                onChange={setFechaTemperatura}
+                                value={fechaFrecuenciaCard}
+                                onChange={setFechaFrecuenciaCard}
                                 animateYearScrolling
                             />
                             </div>
                         </div>
                         <div className="row mb-4 align-items-center justify-content-spacebetween">
-                            <input onChange={(e)=>{setValores({...valores, temperatura: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Presión arterial"/>
+                            <input value={valores.presionArt} onChange={(e)=>{setValores({...valores, presionArt: e.target.value})}} type="text" className="form-control  col-lg-4" placeholder="Presión arterial"/>
                             <div className="col-lg-5 spe-input">
                             <DatePicker
                                 className="col-lg-12"
@@ -858,8 +915,8 @@ function History() {
                                 label=""
                                 okLabel="Listo"
                                 cancelLabel="Cancelar"
-                                value={fechaTemperatura}
-                                onChange={setFechaTemperatura}
+                                value={fechaPresionArterial}
+                                onChange={setFechaPresionArterial}
                                 animateYearScrolling
                             />
                             </div>
@@ -875,7 +932,7 @@ function History() {
                   </button>
                 </div>
               </div>
-            </div> : <div></div> }
+            </div>}
             <div className="page-header align-items-center justify-content-spacebetween row no-gutters px-4 my-4">
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                     <div className="row align-items-center">
@@ -1042,7 +1099,7 @@ function History() {
                                 <div className="row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-4 mb-0">Motivo de la consulta</p>
                                     <div className="form-group col-lg-4 mt-3">
-                                      <input type="text" onChange={e=>{setPalabra(e.target.value)}} placeholder="Dolor de cabeza" className="form-control"/>
+                                      <input value={palabra} type="text" onChange={e=>{setPalabra(e.target.value)}} placeholder="Dolor de cabeza" className="form-control"/>
                                     </div>
                                     <div className="form-group col-lg-4 mt-3">
                                         <span onClick={()=>{ palabra === "" ? console.log("Error") : setPalabrasClave([...palabrasClave, palabra]) }} className={palabra === "" ? "btn btn-disabled btn-block" : "btn btn-primary btn-block"}>Añadir</span>
@@ -1600,13 +1657,28 @@ function History() {
     )
     
     async function saveEpisode(){
+        setSucessMessage("Consulta guardada exitosamente")
+        setSuccess(true)
         let id = Date.now().toString()
         try{
             await firebase.db.collection("Expedientes").doc(data.state.mid).collection("Episodios").doc(id).set({
                 idConsulta: id,
                 fechaConsulta: fechaConsulta ? fechaConsulta.toDate() : moment().toDate(),
+                signosVitales: valores,
+                signosVitalesFechas: [ 
+                    fechaTalla ?? moment().toDate(),
+                    fechaPeso ?? moment().toDate(),
+                    fechaTemperatura ?? moment().toDate(),
+                    fechaFrecuenciaResp ?? moment().toDate(),
+                    fechaFrecuenciaCard ?? moment().toDate(),
+                    fechaPresionArterial ?? moment().toDate(),
+                ],
                 motivoConsulta: palabrasClave,
-                datalleConsulta: episodioValues.datalleConsulta,
+                anteFisicoValues,
+                anteAparatosValues,
+                ordenesEstudio,
+                tratamientos,
+                detalleConsulta: episodioValues.detalleConsulta,
                 diagnosticoConsulta: episodioValues.diagnosticoConsulta,
                 comentariosConsulta: episodioValues.comentariosConsulta,
                 instruccionesAdicionalesConsulta: episodioValues.instruccionesAdicionalesConsulta

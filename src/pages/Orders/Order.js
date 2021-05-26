@@ -313,7 +313,7 @@ function Order() {
             //   pathname: "/client/pet/history",
             //   state: {mid: order.mid, uid: order.uid}
             // })
-            if(order.tipoOrden === "Videoconsulta" ){
+            if(order.tipoOrden === "Videoconsulta" || order.tipoOrden === "videoconsulta"){
               setRoomName(order.videoId)
               setModal(true)
             }else{
