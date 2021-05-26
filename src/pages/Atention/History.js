@@ -163,8 +163,10 @@ function History() {
     const [antecedentes, setAntecedentes] = useState({})
     const [episodios, setEpisodios] = useState([])
     const [episode, setEpisode] = useState({})
+    const [docAntecedentes, setDocAntecedentes] = useState({})
     
 
+    const [antecedentesModal, setAntecedentesModal] = useState(false)
     const [episodioStatus, setEpisodioStatus] = useState(false)
     const [eventoStatus, setEventoStatus] = useState(false)
     const [antecedentesStatus, setAntecedentesStatus] = useState(false)
@@ -356,6 +358,9 @@ function History() {
                     setTiposPatologias(tiposPatologias)
                 })
             })
+            firebase.db.collection("Expedientes").doc(mid).collection("Antecedentes").doc(mid).onSnapshot((val)=>{
+                setDocAntecedentes(val.data())
+            })
             firebase.db.collection("Expedientes").doc(mid).collection("Alergias").onSnapshot((val)=>{
                 val.docs.forEach((doc)=>{
                     alergias.push(doc.data())
@@ -526,6 +531,134 @@ function History() {
                   </button>
                   <button onClick={()=>{setEpisodeShow(false)}} className={`btn btn-primary`}>
                     Guardar
+                  </button>
+                </div>
+              </div>
+            </div> : <div></div> }
+            { antecedentesModal ? <div className="cc-modal-wrapper fadeIn">
+              <div className="cc-modal cc-modal-scroll">
+                <div className="cc-modal-header mb-2">
+                  <div className="no-gutters mb-3 row align-items-center justify-content-spacebetween">
+                    <h3 className="mb-0">Antecedentes</h3>
+                  </div>
+                </div>
+                <div className="cc-modal-body">
+                    <div className="col-lg-12"> 
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Realizas ejercicio</p>
+                            <p className="mb-0" >{docAntecedentes.realizasEjercicio.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.realizasEjercicio.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Diabéticos en la familia</p>
+                            <p className="mb-0" >{docAntecedentes.diabeticosEnLaFamilia.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.diabeticosEnLaFamilia.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Cáncer en la familia</p>
+                            <p className="mb-0" >{docAntecedentes.cancerEnLaFamilia.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.cancerEnLaFamilia.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Hipertensión en la familia</p>
+                            <p className="mb-0" >{docAntecedentes.hipertensionEnLaFamilia.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.hipertensionEnLaFamilia.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Ingieres bebidas alcohólicas</p>
+                            <p className="mb-0" >{docAntecedentes.ingieresBebidasAlcoholicas.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.ingieresBebidasAlcoholicas.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Fumas</p>
+                            <p className="mb-0" >{docAntecedentes.fumas.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.fumas.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Te realizas Check Up cada año</p>
+                            <p className="mb-0" >{docAntecedentes.checkUpCadaAno.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.checkUpCadaAno.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Has sido contagiado de COVID</p>
+                            <p className="mb-0" >{docAntecedentes.contagiadoDeCOVID.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.contagiadoDeCOVID.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Hombre mayor de 45 años, te has realizado la prueba de Ántigeno Prostático</p>
+                            <p className="mb-0" >{docAntecedentes.pruebaAntigenoProstatico.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.pruebaAntigenoProstatico.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Dedicas tiempo al esparcimiento</p>
+                            <p className="mb-0" >{docAntecedentes.dedicasTiempoEsparcimiento.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.dedicasTiempoEsparcimiento.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Dedicas tiempo de calidad a la familia</p>
+                            <p className="mb-0" >{docAntecedentes.dedicasTiempoFamilia.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.dedicasTiempoFamilia.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Dedicas tiempo de tu religión</p>
+                            <p className="mb-0" >{docAntecedentes.dedicasTiempoReligion.si ? "Sí" : "No" }</p>
+                            <p className="mb-0" >{docAntecedentes.dedicasTiempoReligion.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Te consideras</p>
+                            <p className="mb-0" >{docAntecedentes.teConsideras.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.teConsideras.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Cuantas horas duermes por la noche</p>
+                            <p className="mb-0" >{docAntecedentes.cuantasHorasDuermes.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.cuantasHorasDuermes.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Que bebida ingieres con más frecuencia</p>
+                            <p className="mb-0" >{docAntecedentes.bebidaIngieresFrecuencia.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.bebidaIngieresFrecuencia.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Que típo de bebida alcohólica ingieres con más frecuencia</p>
+                            <p className="mb-0" >{docAntecedentes.bebidaAlcoholicaIngieresFrecuencia.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.bebidaAlcoholicaIngieresFrecuencia.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Cómo consideras tu alimentación</p>
+                            <p className="mb-0" >{docAntecedentes.considerasTuAlimentacion.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.considerasTuAlimentacion.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Constitución corporal</p>
+                            <p className="mb-0" >{docAntecedentes.constitucionCorporal.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.constitucionCorporal.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Nivel de estres laboral, o de estilo de vida</p>
+                            <p className="mb-0" >{docAntecedentes.nivelEstresLaboral.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.nivelEstresLaboral.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">En una escala del 1 al 10 cómo consideras tu estado de salud en general</p>
+                            <p className="mb-0" >{docAntecedentes.estadoSalud.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.estadoSalud.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Cuantas horas trabajas al día</p>
+                            <p className="mb-0" >{docAntecedentes.horasTrabajasDia.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.horasTrabajasDia.comentario}</p>
+                        </div>
+                        <div className="my-3">
+                            <p className="mb-0 color-primary bold ">Te movilizas en</p>
+                            <p className="mb-0" >{docAntecedentes.teMovilizasEn.valor}</p>
+                            <p className="mb-0" >{docAntecedentes.teMovilizasEn.comentario}</p>
+                        </div>
+                    </div>
+                </div>
+                <div className="cc-modal-footer align-items-center justify-content-spacebetween">
+                  <button onClick={()=>{setAntecedentesModal(false)}} className={`btn btn-disabled`}>
+                    Cerrar
                   </button>
                 </div>
               </div>
@@ -1395,7 +1528,12 @@ function History() {
                                 </div>
                             </div>
 
-                            <div className="row no-gutters align-items-center justify-content-spacebetween">
+                            <div className="row mt-3 no-gutters align-items-center justify-content-spacebetween">
+                                { docAntecedentes ? 
+                                    <div onClick={()=>{setAntecedentesModal(true)}} className="btn btn-primary">
+                                        Ver antecedentes
+                                    </div>
+                                : <div></div> }
                                 <div onClick={()=>{updateAntecedentes()}} className="btn btn-primary">
                                     Actualizar antecedentes
                                 </div>

@@ -27,8 +27,14 @@ function Agenda(){
     let tipos = [];
     
     const reference = firebase.db.collection('Ordenes').where("tipoOrden", "==", "Servicio").where("aliadoId", "==", id)
+    const reference2 = firebase.db.collection('Ordenes').where("tipoOrden", "==", "Videoconsulta").where("aliadoId", "==", id)
 
     await reference.get().then(val => {
+      val.docs.forEach(item=>{
+        tipos.push(item.data())
+      })
+    })
+    await reference2.get().then(val => {
       val.docs.forEach(item=>{
         tipos.push(item.data())
       })
@@ -99,7 +105,7 @@ function Agenda(){
       date.setMinutes(hourL[1])
       var event = {
         oid: item.oid,
-        title: item.titulo + " - " + item.nombre,
+        title: `${item.titulo} - ${item.nombre} - ${item.atendidoStatus}`,
         start: item.date === null ? moment().toDate() : date,
         end: item.date === null ? moment().toDate() : moment(date).add(30, "minutes").toDate(),
         allDay: false
