@@ -5,6 +5,7 @@ import { MuiPickersUtilsProvider, DatePicker } from '@material-ui/pickers';
 import moment from 'moment';
 import MomentUtils from '@date-io/moment';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import axios from 'axios';
 
 function History() {
     
@@ -15,6 +16,7 @@ function History() {
     const ordenesList = [
         "Hemograma completo",
         "Medicina Nuclear",
+        "Mastografía",
         "PET",
         "Panel básico metabólico: Electrolitos, glucosa, nitrógeno de urea, creatinina",
         "Perfil hepático: Bilirrubina, total y directa, AST, LDH",
@@ -30,115 +32,241 @@ function History() {
     ]
 
     let medicamentos = [
-        "ABACAVIR",
-        "ABAMUNE",
-        "ACETAMINOFEN GOTAS",
-        "ALKA SELTZER",
-        "AMANTADINA",
-        "AMANTIX",
-        "AMIGDAL",
-        "AMINOPLASMAL",
-        "AMVAL",
-        "ARCENAMIDE",
-        "ARSENAMIDE",
-        "BEXON",
-        "BICARBONATO DE SODIO",
-        "BIONOVA",
-        "BIOTINIB",
-        "BONDIGEST",
-        "BRILINTA",
-        "BUCAL   V",
-        "BUSCAPINA",
-        "CALLICIDA AUDAZ",
-        "CARBAMAZEPINA",
-        "CARDIOLITE",
-        "CARDIOMAX PLUS",
-        "CARNISIN",
-        "CASANTRANOL",
-        "CEFOPERAZONA",
-        "CELSENTRI",
-        "CHALVER",
-        "CILOSTAZOL",
-        "CIMZIA ",
-        "CLOLAR",
-        "CLORURO DE POTASIO",
-        "CLORURO DE SODIO",
-        "COLLOPLUS",
-        "COMPLEJO B",
-        "CONDILINA",
-        "CONDIVER",
-        "CROTAMIT",
-        "CURAFLEX",
-        "CUYDERM",
-        "CUYDERM",
-        "DACOGEN  ",
-        "DEPORTBYAL",
-        "DIALISIS",
-        "DIANEAL",
-        "DICLOFENACO",
-        "DIGESAL",
-        "DIPIRONA",
-        "DISLEP",
-        "DULSAR",
-        "EFFIENT",
-        "EMULSION DE SCOTT",
-        "EPOYET",
-        "ERITINA",
-        "ERITROPOYETINA",
-        "ESCOMED",
-        "ESMERON",
-        "ESPASMOBIL",
-        "ESTAVUDINA",
-        "EUMOTRIX PLUS",
-        "EXFORGE",
-        "FALMONOX",
-        "FERANIN",
-        "FERROPROTINA",
-        "FITOSTIMOLINE",
-        "FLEXTRIL",
-        "FRIXODOL",
-        "GALAC",
-        "FEPA",
-        "HIDROCORTISONA",
-        "HYDROCORTISONE100",
-        "SOLU CORTEF",
-        "ADRENALINA",
-        "GASTRUM",
-        "GASTRUM FAST",
-        "ULFADIN",
-        "CYTIL",
-        "CYTOTEC",
-        "INDUSTOL",
-        "ZETEC",
-        "ZETEC",
-        "ALIVIEX LUA",
-        "BUSCASAN",
-        "CIPLAPRAZOL",
-        "ZINC",
-        "OMNIPAQUE",
-        "HEXABRIX",
-        "IOPA",
-        "IOPAMIDOL",
-        "IOPAMIRON",
-        "ONCO",
-        "ULTRAVIST",
-        "OPTIRAY",
-        "OCTREOSCAN",
-        "INDIMACIS",
-        "META",
-        "MIBG",
-        "METASTRON ",
-        "CAPSION ",
-        "SODIUM",
-        "THERACAPSODIUM",
-        "YODURO DE SODIO",
-        "MIBG",
-        "ZEVAMAB ",
+        "ACICLOVIR 400 MG",
+        "ADALIMUMAB 40 MG/ 0",
+        "AGUA PARA INYECCIÓN 1",
+        "AGUA PARA INYECCIÓN 1",
+        "ALPRAZOLAM 1 MG",
+        "ALPRAZOLAM 2 MG",
+        "ALPRAZOLAM 2 MG",
+        "AMBROXOL CLORHIDRATO 30MG/ 5 ML",
+        "AMOXICILINA (COMO TRIHIDRATO) 500 MG / 5 ML",
+        "AMOXICILINA 875 MG",
+        "ATENOLOL 100 MG",
+        "ATENOLOL 100 MG",
+        "ATENOLOL 100 MG",
+        "ATENOLOL 100 MG",
+        "ATENOLOL 50 MG",
+        "ATENOLOL 50 MG",
+        "ATENOLOL 50 MG",
+        "ATENOLOL 50 MG",
+        "ATENOLOL 50 MG",
+        "ATORVASTATINA 10 MG",
+        "ATORVASTATINA 20 MG",
+        "BENDAMUSTINA CLORHIDRATO  25 MG",
+        "BENDAMUSTINA CLORHIDRATO 100 MG",
+        "BETAMETASONA 17 VALERATO 0",
+        "BETAMETASONA 50 MG / 100 ML",
+        "BETASONA ACETATO/ BETASONA 21 FOSFATO SODICO 6-7",
+        "BOSENTAN 62",
+        "BUDESONIDA- FORMOTEROL FUMARATO 200 MCG - 6 MGC",
+        "BUDESONIDA- FORMOTEROL FUMARATO 400 MCG - 12 MCG",
+        "BUDESONIDA- FORMOTEROL FUMARATO 400 MCG - 12 MCG",
+        "BUPROPION CLORHIDRATO  - NALTREXONA 90 MG   -  8 MG",
+        "BUPROPION CLORHIDRATO  - NALTREXONA 90 MG   -  8 MG",
+        "BUSERELINA 6",
+        "CAFEINA ANHIDRA  -  DOMPERIDONA  -  CLORFENIRAMINA MALEATO  -  ERGOTAMINA TARTRATO  -  DIPIRONA 100 MG - 7 MG - 1 MG - 1 MG - 400 MG",
+        "CAFEINA ANHIDRA  -  DOMPERIDONA  -  CLORFENIRAMINA MALEATO  -  ERGOTAMINA TARTRATO  -  DIPIRONA 100 MG - 7 MG - 1 MG - 1 MG - 400 MG",
+        "CAPECITABINA 500 MG",
+        "CARFILZOMIB 60 MG",
+        "CARVEDILOL - HIDROCLOROTIAZIDA 25 MG - 12.5 MG",
+        "CARVELIDOL  50 MG",
+        "CARVELIDOL 3.125 MG",
+        "CARVELIDOL 3.125 MG",
+        "CARVELIDOL FOSFATO 10 MG",
+        "CETIRIZINA DICLORHIDRATO 10 MG",
+        "CLARITROMICINA 1000 MG",
+        "CLARITROMICINA 1000 MG",
+        "CLINDAMICINA FOSFATO 600 MG / 4 ML",
+        "CLOFEDIANOL CLORHIDRATO - BROMHEXINA CLORHIDRATO 140 MG - 20 MG / 100 ML",
+        "CLOFEDIANOL CLORHIDRATO - BROMHEXINA CLORHIDRATO 250 MG - 40 MG / 100 ML",
+        "CLONAZEPAM 2.5 MG/ML",
+        "CLORHIDRATO DE BUPIVACAÖNA 5 MG / 1 ML",
+        "CLORURO DE POTASIO 1",
+        "COLECALCIFEROL  (VITAMINA D3) 2",
+        "COLECALCIFEROL  (VITAMINA D3) 2",
+        "DAPSONA 7",
+        "DASATINIB 100 MG",
+        "DASATINIB 70 MG",
+        "DEFLAZACORT 30 MG",
+        "DEFLAZACORT 6 MG",
+        "DEXAMETASONA 0",
+        "DEXMEDETOMIDINA (como Dexmedetomidina Clorhidrato) 200 MCG",
+        "DEXMEDETOMIDINA 200 MCG",
+        "D-GLUCOSA MONOHIDRATO 10 G / 100 ML",
+        "DICLOFENAC SODICO 0.05",
+        "DICLOFENAC SODICO 75 MG",
+        "DICLOFENAC SODICO 75 MG",
+        "DICLOFENACO DIETILAMONICO 23.2 MG",
+        "DICLOFENACO DIETILAMONICO 23.2 MG",
+        "DICLOFENACO POTASICO - PARACETAMOL 50 MG - 400 MG",
+        "DOLUTEGRAVIR 50 MG",
+        "DORZOLAMIDA CLORHIDRATO –TIMOLOL MALEATO 0",
+        "DOXICILINA 100 MG",
+        "ELEXACAFTOR - IVACAFTOR - TEZACAFTOR / IVACAFTOR 100 MG - 75 MG - 50 MG / 150 MG",
+        "EMTRICITABINA  -  DARUNAVIR  -  COBICISTAT   -   TENOFOVIR ALAFENAMIDA 200 MG  -  800 MG  -  150 MG  -  10 MG",
+        "ENOXAPARINA SODICA 40 MG / 0",
+        "ENOXAPARINA SODICA 40 MG/0.4 ML",
+        "ENOXAPARINA SODICA 60 MG / 0",
+        "ENOXAPARINA SODICA 80 MG / 0",
+        "ENZALUTAMIDA 40 MG",
+        "ERGOTAMINA TARTRATO  -  CAFEINA ANHIDRA  -  CLORFENIRAMINA MALEATO  -  DIPIRONA  -  METOCLOPRAMIDA CLORHIDRATO 1 MG  -  100 MG  -  1 MG  -  400 MG  -  7",
+        "ERGOTAMINA TARTRATO  -  CAFEINA ANHIDRA  -  CLORFENIRAMINA MALEATO  -  DIPIRONA  -  METOCLOPRAMIDA CLORHIDRATO 1 MG  -  100 MG  -  1 MG  -  400 MG  -  7",
+        "ERGOTAMINA TARTRATO  -  CAFEINA ANHIDRA  -  CLORFENIRAMINA MALEATO  -  DIPIRONA  -  METOCLOPRAMIDA CLORHIDRATO 1 MG  -  100 MG  -  1 MG  -  400 MG  -  7",
+        "ERITROMICINA 0",
+        "ERITROMICINA 0",
+        "ERITROMICINA LACTOBIONATO 0.01",
+        "ERITROMICINA LACTOBIONATO 0.01",
+        "ERLOTINIB (COMO E. CLORHIDRATO) 100 MG",
+        "ERLOTINIB COMO CLORHIDRATO 150 MG",
+        "ERTUGLIFLOZINA - METFORMINA  7",
+        "ERTUGLIFLOZINA - METFORMINA 2",
+        "ETONOGESTREL - ETINILESTRADIOL 11 MG - 3",
+        "EVEROLIMUS 10 MG",
+        "EVEROLIMUS 2",
+        "EVEROLIMUS 5 MG",
+        "FACTOR VIII HUMANO DE LA COAGULACION  500 UI",
+        "FINASTERIDE 1 MG",
+        "FLUMAZENIL 0",
+        "FOLITROPINA ALFA 300 UI",
+        "FOLITROPINA ALFA 300 UI",
+        "FOLITROPINA ALFA 300 UI",
+        "FOLITROPINA ALFA 900 UI",
+        "FOLITROPINA ALFA 900 UI",
+        "FOLITROPINA ALFA 900 UI",
+        "FOSFATO SODICO DE DEXAMETASONA  -  SULFATO DE NEOMICINA  -  CLORFERINAMINA MALEATO  -  NAFAZOLINA CLORHIDRATO 5 MG / 100 ML  -  500 MG / 100 ML  -  100 MG / 100 ML  -  100 MG / 100 ML",
+        "FUROSEMIDA 40 MG",
+        "GEFITINIB 250 MG / DOSIS",
+        "GLATIRAMER ACETATO 40 MG / ML",
+        "GLICAZIDA 30 MG",
+        "GLICAZIDA 60 MG",
+        "HIDROCLOROTIAZIDA 25 MG",
+        "HIDROCORTISONA-LIDOCAINA CLORHIDRATO- CIPROFLOXACINA  1 G/100 ML - 5 G / 100 ML- 0",
+        "IBUPROFENO + PARACETAMOL 200 MG + 500 MG",
+        "IBUPROFENO 0.04",
+        "IBUPROFENO 2000 MG",
+        "IBUPROFENO 4G/100ML",
+        "IFOSFAMIDA 1 G",
+        "IMATINIB 400 MG",
+        "INSULINA GLARGINA 100 UI / ML",
+        "INSULINA GLULISINA 3",
+        "INSULINA HUMANA ISOFANA 100 UI / ML",
+        "ISAVUCONAZOL 100 MG",
+        "ISAVUCONAZOL 200 MG",
+        "ITRACONAZOL 50 MG",
+        "KETOCONAZOL 0",
+        "KETOCONAZOL 0",
+        "LAMIVUDINA  - TENOFOVIR DISOPROXIL FUMARATO 300 MG - 300 MG",
+        "LAPATINIB DITOSILATO MONOHIDRATO (como LAPATINIB) 405 MG",
+        "L-ASPARAGINASA RECOMBINANTE 10.000 U",
+        "LATANOPROST 0.00005",
+        "LENALIDOMIDA 10 MG",
+        "LENALIDOMIDA 15 MG",
+        "LENALIDOMIDA 25 MG",
+        "LENALIDOMIDA 5 MG",
+        "LIDOCAINA COMO LIDOCAINA CLORHIDRATO 0.01",
+        "LIDOCAINA COMO LIDOCAINA CLORHIDRATO 0.02",
+        "LIDOCAÍNA CLORHIDRATO 0.02",
+        "LINACLOTIDA 72 MCG",
+        "LINACLOTIDA 72 MCG",
+        "LORATADINA 1 MG/ML",
+        "LORATADINA 10 MG",
+        "LORATADINA 10 MG",
+        "LORATADINA 100 MG / 100 ML",
+        "LOSARTAN POTASICO – AMLODIPINO (COMO BESILATO) 100 MG – 5 MG",
+        "LOSARTAN POTASICO – AMLODIPINO (COMO BESILATO) 50 MG – 5 MG",
+        "LOSARTAN POTASICO 50 MG",
+        "LOSARTAN POTASICO 50 MG",
+        "MEPREDNISONA 40 MG",
+        "MEPREDNISONA 8 MG",
+        "MEROPENEM (COMO TRIHIDRATO) 1 G",
+        "MEROPENEM (COMO TRIHIDRATO) 500 MG",
+        "MESALAZINA 4 G",
+        "MESALAZINA 500 MG",
+        "METOCLOPRAMIDA 10 MG",
+        "MIDAZOLAM 15 MG/3 ML",
+        "MIDAZOLAM 15 MG/3 ML",
+        "MIDAZOLAM 15 MG/3 ML",
+        "MONTELUKAST (como MONTELUKAST SàDICO)-LEVOCETIRIZINA     DICLORHIDRATO 10 MG - 5 MG",
+        "MONTELUKAST 10 MG",
+        "MONTELUKAST 5 MG",
+        "NIMOTUZUMAB 50 MG",
+        "NITISINONA 20 MG",
+        "PALBOCICLIB 100 MG",
+        "PALBOCICLIB 125 MG",
+        "PALBOCICLIB 75 MG",
+        "PARACETAMOL 10 G / 100 ML",
+        "PARACETAMOL 10 Gÿ/ 100 ML",
+        "PARACETAMOL 500 MG",
+        "PAZOPANIB 200 MG",
+        "PAZOPANIB 400 MG",
+        "PIRFENIDONA 200 MG",
+        "PIRFENIDONA 200 MG",
+        "PIRFENIDONA 801 MG",
+        "PIRFENIDONA 801 MG",
+        "PIRIDOXINA CLORHIDRATO/ DOXILAMINA SUCCINATO 10 MG /10 MG",
+        "PIRIDOXINA CLORHIDRATO/ DOXILAMINA SUCCINATO 10 MG /10 MG",
+        "POMALIDOMIDA 1 MG",
+        "POMALIDOMIDA 2 MG",
+        "POMALIDOMIDA 3 MG",
+        "POMALIDOMIDA 4 MG",
+        "PREGABALINA 150 MG",
+        "PREGABALINA 150 MG",
+        "PREGABALINA 150 MG",
+        "PREGABALINA 150 MG",
+        "PREGABALINA 25 MG",
+        "PREGABALINA 25 MG",
+        "PREGABALINA 300 MG",
+        "PREGABALINA 300 MG",
+        "PREGABALINA 50 MG",
+        "PREGABALINA 50 MG",
+        "PREGABALINA 75 MG",
+        "PREGABALINA 75 MG",
+        "PREGABALINA 75 MG",
+        "PREGABALINA 75 MG",
+        "PREGABALINA 75 MG",
+        "PREGABALINA 75 MG",
+        "RALTEGRAVIR (COMO RALTEGRAVIR POTÁSICO) 100 MG / SOBRE",
+        "RANITIDINA - CINITRAPRIDA 150 MG – 1 MG",
+        "RANITIDINA 50 MG / 5 ML   -  1500 MG / 5 ML",
+        "RIFAMPICINA 100 MG / 5 ML",
+        "RITUXIMAB 10 MG/ML",
+        "RITUXIMAB 10 MG/ML",
+        "RIVAROXABAN 10 MG",
+        "RIVAROXABAN 20 MG",
+        "RIVAROXABAN 30 MG",
+        "ROSUVASTATINA 20 MG",
+        "RUCAPARIB 300 MG",
+        "SERTRALINA (COMO SERTRALINA CLORHIDRATO) 100 MG",
+        "SERTRALINA (COMO SERTRALINA CLORHIDRATO) 100 MG",
+        "SERTRALINA (COMO SERTRALINA CLORHIDRATO) 100 MG",
+        "SERTRALINA (COMO SERTRALINA CLORHIDRATO) 50 MG",
+        "SERTRALINA (COMO SERTRALINA CLORHIDRATO) 50 MG",
+        "SERTRALINA (COMO SERTRALINA CLORHIDRATO) 50 MG",
+        "TADALAFILO 20 MG",
+        "TADALAFILO 20 MG",
+        "TALAZOPARIB 0",
+        "TALAZOPARIB 1 MG",
+        "TELMISARTÁN  -  HIDROCLOROTIAZIDA 80 MG  -  12",
+        "TIMOLOL MALEATO - LATANOPROST 5 MG /ML - 50 MCG/ML",
+        "TOFACITINIB 5 MG",
+        "TROPICAMIDA 0.01",
+        "ULIPRISTAL ACETATO 5 MG",
+        "UPADACITINIBÿ 30 MG",
+        "VACUNA ANTIGRIPAL TETRAVALENTE VS",
+        "VALGANCICLOVIR 450 MG",
+        "VALSARTAN 160 MG",
+        "VALSARTAN 80 MG",
+        "VENETOCLAX 10 MG",
+        "VENETOCLAX 50 MG",
     ]
 
     let todayDate = moment().format("ddd, MMM D YYYY").toString()
     const [success, setSuccess] = useState(false)
     const [sucessMessage, setSucessMessage] = useState("")
+
+    const [error, setError] = useState(false)
+    const [errorMessage, setErrorMessage] = useState("")
 
     const [fechaPeso, setFechaPeso] = useState(null)
     const [fechaTemperatura, setFechaTemperatura] = useState(null)
@@ -160,6 +288,7 @@ function History() {
     const [palabra, setPalabra] = useState("")
     const [fechaNac, setFechaNac] = useState("")
     const [text, setText] = useState("")
+    const [tipoEntrega, setTipoEntrega] = useState("")
     const [palabrasClave, setPalabrasClave] = useState([])
     const [ordenesEstudio, setOrdenesEstudio] = useState([])
     const [tratamientos, setTratamientos] = useState([])
@@ -173,12 +302,14 @@ function History() {
     
 
     const [antecedentesModal, setAntecedentesModal] = useState(false)
-    const [episodioStatus, setEpisodioStatus] = useState(false)
+    const [episodioStatus, setEpisodioStatus] = useState(true)
     const [eventoStatus, setEventoStatus] = useState(false)
+    const [listoConsulta, setListoConsulta] = useState(false)
     const [antecedentesStatus, setAntecedentesStatus] = useState(false)
-    const [pet, setPet] = useState({})
+    const [patient, setPatient] = useState({})
     const [episodioSelected, setEpisodioSelected] = useState(null)
     const [alergias, setAlergias] = useState([])
+    const [ordenComentario, setOrdenComentario] = useState("")
     const [tiposAlergias, setTiposAlergias] = useState([])
     const [tiposVacunas, setTiposVacunas] = useState([])
     const [tiposPatologias, setTiposPatologias] = useState([])
@@ -192,7 +323,7 @@ function History() {
         unidad: null,
         frecuencia: null,
         durante: null,
-        notaTratamiento: null
+        notaTratamiento: ""
     })
     
     const [tratamientoExtras, setTratamientoExtras] = useState({
@@ -328,65 +459,22 @@ function History() {
         },
     })
 
-    const getPet = async(mid) => {
-        let alergias = []
-        let vacunas = []
+    const getPatient = async(uid) => {
         let patologias = []
-        let desparacitaciones = []
         try {
-            firebase.db.collection( data.state.isOwner ? "Dueños" : "Mascotas").doc(mid).get().then((val)=>{
-                setPet(val.data())
-                setFechaNac(moment( data.state.isOwner ? val.data().fechaNacimiento.toDate() : val.data().fechanac.toDate()).format(`D MMMM, YYYY`).toString())
-                let tiposVacunas = []
-                let tiposAlergias = []
-                let tiposPatologias = []
-                firebase.db.collection("Especies").doc(val.data().especie).collection("Vacunas").get().then((val)=>{
-                    Promise.all(val.docs.map(async (doc) => {
-                        tiposVacunas.push(doc.id)
-                    }))
-                    setTiposVacunas(tiposVacunas)
-                })
-                firebase.db.collection("Especies").doc(val.data().especie).collection("Alergias").get().then((val)=>{
-                    Promise.all(val.docs.map(async (doc) => {
-                        tiposAlergias.push(doc.id)
-                    }))
-                    setTiposAlergias(tiposAlergias)
-                })
-                firebase.db.collection("Especies").doc(val.data().especie).collection("Patologias").get().then((val)=>{
-                    Promise.all(val.docs.map(async (doc) => {
-                        tiposPatologias.push(doc.id)
-                    }))
-                    setTiposPatologias(tiposPatologias)
-                })
+            firebase.db.collection("Dueños").doc(uid).get().then((val)=>{
+                setPatient(val.data())
             })
-            firebase.db.collection("Expedientes").doc(mid).collection("Antecedentes").doc(mid).onSnapshot((val)=>{
+            firebase.db.collection("Expedientes").doc(uid).collection("Antecedentes").doc(uid).onSnapshot((val)=>{
                 setDocAntecedentes(val.data())
             })
-            firebase.db.collection("Expedientes").doc(mid).collection("Alergias").onSnapshot((val)=>{
-                val.docs.forEach((doc)=>{
-                    alergias.push(doc.data())
-                })
-                setAlergias(alergias)
-            })
-            firebase.db.collection("Expedientes").doc(mid).collection("Vacunas").onSnapshot((val)=>{
-                val.docs.forEach((doc)=>{
-                    vacunas.push(doc.data())
-                })
-                setVacunas(vacunas)
-            })
-            firebase.db.collection("Expedientes").doc(mid).collection("Patologia").onSnapshot((val)=>{
+            firebase.db.collection("Expedientes").doc(uid).collection("Patologia").onSnapshot((val)=>{
                 val.docs.forEach((doc)=>{
                     patologias.push(doc.data())
                 })
                 setPatologias(patologias)
             })
-            firebase.db.collection("Expedientes").doc(mid).collection("Desparasitacion").onSnapshot((val)=>{
-                val.docs.forEach((doc)=>{
-                    desparacitaciones.push(doc.data())
-                })
-                setDesparacitaciones(desparacitaciones)
-            })
-            firebase.db.collection("Expedientes").doc(mid).collection("Episodios").onSnapshot((val) => {
+            firebase.db.collection("Expedientes").doc(uid).collection("Episodios").onSnapshot((val) => {
                 let tipos = []
                 if (val.docs.length > 0) {
                     setEpisodiosBool(true)
@@ -396,17 +484,7 @@ function History() {
                     setEpisodios(tipos.sort((a, b) => b.fechaConsulta - a.fechaConsulta))
                 }
             });
-            // firebase.db.collection("Expedientes").doc(mid).collection("Episodios").get().then((val)=>{
-            //     let tipos = []
-            //     if (val.docs.length > 0) {
-            //         setEpisodiosBool(true)
-            //         Promise.all(val.docs.map(async (doc) => {
-            //             tipos.push(doc.data())
-            //         }))
-            //         setEpisodios(tipos)
-            //     }
-            // })
-            firebase.db.collection("Expedientes").doc(mid).collection("Antecedentes").doc(mid).get().then((val)=>{
+            firebase.db.collection("Expedientes").doc(uid).collection("Antecedentes").doc(uid).get().then((val)=>{
                 setAntecedentes(val.data())
             })
         } catch (e) {
@@ -415,7 +493,13 @@ function History() {
     }
 
     function createOrden(){
-        console.log(ordenEstudio)
+
+        let orden = {}
+        orden["ordenEstudio"] = ordenEstudio
+        orden["ordenComentario"] = ordenComentario
+        setOrdenesEstudio([...ordenesEstudio, orden])
+        setOrdenComentario("")
+        setOrdenEstudio("Seleccionar orden:")
     }
     
     function createTreatment(){
@@ -425,6 +509,10 @@ function History() {
         
         tratamiento.frecuencia = frecuencia
         tratamiento.durante = durante
+        tratamiento["frecuenciaNumber"] = tratamientoExtras.frecuenciaNumber
+        tratamiento["frecuenciaText"] = tratamientoExtras.frecuenciaText
+        tratamiento["duranteNumber"] = tratamientoExtras.duranteNumber
+        tratamiento["duranteText"] = tratamientoExtras.duranteText
 
         setTratamientos([...tratamientos, tratamiento])
         console.log(tratamientos)
@@ -488,18 +576,29 @@ function History() {
             </div>
         )
     }
+    
+    const ErrorComponent = ({msg}) => {
+        return (
+            <div className="error-alert">
+                <span className="material-icons mr-2">error</span>
+                {msg}
+                <div onClick={()=>{setError(false)}} className="material-icons ml-2">close</div>
+            </div>
+        )
+    }
 
     useEffect(() => {
         firebase.getCurrentUser().then((val)=>{
           setUser(val)
-          getPet(data.state.mid)
+          getPatient(data.state["isOwner"] ? data.state.uid : data.state.mid)
         });
     }, [])
 
     return (
     <MuiPickersUtilsProvider utils={MomentUtils}>
         <div className="main-content-container container-fluid px-4">
-            {success && <SuccessComponent msg={sucessMessage === "" ? "Consulta guardada exitosamente" :  sucessMessage}/>}
+            {success && <SuccessComponent msg={sucessMessage === "" ? "Consulta guardada exitosamente" : sucessMessage}/>}
+            {error && <ErrorComponent msg={errorMessage === "" ? "Ha ocurrido un error" : errorMessage}/>}
             { episodeShow && <div className="cc-modal-wrapper fadeIn">
               <div className="cc-modal cc-modal-scroll">
                 <div className="cc-modal-header mb-2">
@@ -535,32 +634,34 @@ function History() {
                             <p className="color-primary mb-1">{episode.instruccionesAdicionalesConsulta === "" ? "" : "Instrucciones adicionales de la consulta:"}</p>
                             <p>{episode.instruccionesAdicionalesConsulta}</p>
                         </div>
-                        <div>
+                        { episode.ordenesEstudio !== undefined && <div>
                             <p className="color-primary mb-1">{episode.ordenesEstudio.length > 0 && "Órdenes de estudio:"}</p>
                             <div className="row no-gutters">
-                                {episode.ordenesEstudio.map((mc)=>{
+                                {episode.ordenesEstudio.map((mc, i)=>{
                                     return (
-                                        <p className="pill-2">{mc}</p>
-                                    )
-                                })}
+                                        <div className="pill-2 rounded" key={i}>
+                                            <p className="mb-1 strong">{mc.ordenEstudio}</p>
+                                            <p className="mb-0 light">{mc.ordenComentario} </p>
+                                        </div>
+                                        )
+                                    })}
                             </div>
                         </div>
-                        <div>
-                            <p className="color-primary mb-1">{episode.signosVitales.talla !== "" 
-                            && episode.signosVitales.peso !== "" 
+                        }
+                        { episode.signosVitales !== undefined && <div>
+                            <p className="color-primary mb-1">{ episode.signosVitales.peso !== "" 
                             && episode.signosVitales.temperatura !== "" 
                             && episode.signosVitales.frecuenciaResp !== "" 
                             && episode.signosVitales.frecuenciaCard !== "" 
                             && episode.signosVitales.presionArt !== "" 
                             ? "Signos vitales:" : ""}</p>
-                            {episode.signosVitales.talla && <p className="mb-1" >Talla: {episode.signosVitales.talla} - {moment(episode.signosVitalesFechas[0].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
-                            {episode.signosVitales.peso && <p className="mb-1" >Peso: {episode.signosVitales.peso} - {moment(episode.signosVitalesFechas[1].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
-                            {episode.signosVitales.temperatura && <p className="mb-1" >Temperatura: {episode.signosVitales.temperatura} - {moment(episode.signosVitalesFechas[2].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
-                            {episode.signosVitales.frecuenciaResp && <p className="mb-1" >Frecuencia respiratoria: {episode.signosVitales.frecuenciaResp} - {moment(episode.signosVitalesFechas[3].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
-                            {episode.signosVitales.frecuenciaCard && <p className="mb-1" >Frecuencia cardiaca: {episode.signosVitales.frecuenciaCard} - {moment(episode.signosVitalesFechas[4].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
-                            {episode.signosVitales.presionArt && <p className="mb-1" >Presion arterial: {episode.signosVitales.presionArt} - {moment(episode.signosVitalesFechas[5].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
-                        </div>
-                        <div>
+                            {episode.signosVitales.peso && <p className="mb-1" >Peso: {episode.signosVitales.peso} - { moment(episode.signosVitalesFechas[0].toDate()).format("ddd, D MMM YYYY").toString() } </p>}
+                            {episode.signosVitales.temperatura && <p className="mb-1" >Temperatura: {episode.signosVitales.temperatura} - { moment(episode.signosVitalesFechas[1].toDate()).format("ddd, MMM D YYYY").toString() } </p>}
+                            {episode.signosVitales.frecuenciaResp && <p className="mb-1" >Frecuencia respiratoria: {episode.signosVitales.frecuenciaResp} - { moment(episode.signosVitalesFechas[2].toDate()).format("ddd, D MMM YYYY").toString() } </p>}
+                            {episode.signosVitales.frecuenciaCard && <p className="mb-1" >Frecuencia cardiaca: {episode.signosVitales.frecuenciaCard} - { moment(episode.signosVitalesFechas[3].toDate()).format("ddd, D MMM YYYY").toString() } </p>}
+                            {episode.signosVitales.presionArt && <p className="mb-1" >Presion arterial: {episode.signosVitales.presionArt} - { moment(episode.signosVitalesFechas[4].toDate()).format("ddd, D MMM YYYY").toString() } </p>}
+                        </div> } 
+                        { episode.tratamientos !== undefined && <div>
                             <p className="color-primary mt-3 mb-1">{episode.tratamientos.length > 0 && "Tratamientos:"}</p>
                             <div className="row no-gutters">
                                 {episode.tratamientos.map((tratamiento, i)=>{
@@ -579,18 +680,43 @@ function History() {
                                     )
                                 })}
                             </div>
-                        </div>
+                        </div> }
                     </div>
                 </div>
                 <div className="cc-modal-footer align-items-center justify-content-spacebetween">
-                  <button onClick={()=>{setEpisodeShow(false)}} className={`btn btn-disabled`}>
+                  {/* <button onClick={()=>{setEpisodeShow(false)}} className={`btn btn-disabled`}>
                     Cancelar
-                  </button>
-                  <button onClick={()=>{setEpisodeShow(false)}} className={`btn btn-primary`}>
-                    Guardar
+                  </button> */}
+                  <button onClick={()=>{setEpisodeShow(false)}} className={`btn btn-primary `}>
+                    Volver
                   </button>
                 </div>
               </div>
+            </div>}
+            { listoConsulta && <div className="cc-modal-wrapper fadeIn">
+                <div className="c2-modal">
+                    <div className="cc-modal-header mb-2">
+                        <h3 className="mb-0">Episodio creado exitosamente</h3>
+                    </div>
+                    <div className="c2-modal-body">
+                       <p className="mb-0">
+                           ¿Desea cerrar la atención y volver a la agenda?
+                       </p>
+                    </div>
+                    <div className="cc-modal-footer align-items-center justify-content-spacebetween">
+                      <button onClick={()=>{setListoConsulta(false)}} className="btn btn-outline-secondary">
+                        No
+                      </button>
+                      <button onClick={()=>{
+                          history.push({
+                            // state: {roleId: data.state.roleId},
+                            pathname: "/clients"
+                        })
+                      }} className={`btn btn-primary`}>
+                        Sí
+                      </button>
+                    </div>
+                </div>
             </div>}
             { antecedentesModal && <div className="cc-modal-wrapper fadeIn">
               <div className="cc-modal cc-modal-scroll">
@@ -937,14 +1063,13 @@ function History() {
                 <div className="col-12 col-sm-5 text-center text-sm-left mb-0">
                     <div className="row align-items-center">
                         <div className="col">
-                            <p className="page-title bold">
-                                <Link to="/clients" className="page-title light">Clientes</Link>{' > '}
-                                <span onClick={()=>{
-                                    history.push({
-                                      pathname: "/clients/client",
-                                      state: {uid: data.state.uid}
-                                    })
-                                }} className="page-title light">Cliente</span>{' > '}Historia de la persona</p>
+                            <p className="page-title bold row"><Link className="color-white mr-3 light" to="/clients">Pacientes</Link> <p className="color-white light mb-0 cursor-pointer" onClick={()=>{
+                                history.push({
+                                  pathname: "/clients/client",
+                                  state: {uid: data.state.uid}
+                                })
+                            }}
+                            >Paciente</p> <span>Expediente médico</span> </p>
                         </div>
                     </div>
                 </div>
@@ -957,27 +1082,18 @@ function History() {
             
             <div className="container">
                 {/* Informacion mascota */}
-                <div className="row box-info-wrapper align-items-center justify-content-spacebetween">
+                {/* <div className="row box-info-wrapper align-items-center justify-content-spacebetween">
                     <div className="col-lg-4">
                         <div className="box-info text-center">
-                            <img src={data.state.isOwner ? pet.url : pet.petthumbnailUrl} className="box-info-img"/>
+                            <img src={patient.url} className="box-info-img"/>
                         </div>
                     </div>
                     <div className="col-lg-4">
                         <div className="box-info">
-                            <p className="mb-0 box-info-p strong">{pet.nombre}</p>
-                        </div>
-                        <div className="box-info">
-                            <p className="mb-0 box-info-p">Fecha de nacimiento: {fechaNac}</p>
-                            {/* <p className="mb-0 box-info-p">Fecha de nacimiento:{ pet.fechanac ? pet.fechanac.toDate() : "26 de Mayo, 2016"}</p> */}
+                            <p className="mb-0 box-info-p strong">{patient.nombre}</p>
                         </div>
                     </div>
-                    <div className="col-lg-4">
-                        <div className="box-info">
-                            <p className="mb-0 box-info-p">Edad: 3 años y 5 meses</p>
-                        </div>
-                    </div>
-                </div>
+                </div> */}
                 {/* End informacion mascota */}
                 <div className="row mt-4">
                     {/* General */}
@@ -1004,7 +1120,6 @@ function History() {
                                 <TabList>
                                     <Tab>Vacunas</Tab>
                                     <Tab>Alergias</Tab>
-
                                 </TabList>
                                 <TabPanel>
                                     {vacunas.map((val)=>{
@@ -1079,7 +1194,7 @@ function History() {
                             </Tabs>
                         : episodioStatus ? 
                             <div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-7 mb-0">Fecha de consulta</p>
                                     <div className="mt-3 col-lg-5 spe-input">
                                       <DatePicker
@@ -1096,7 +1211,7 @@ function History() {
                                       />
                                     </div>
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-4 mb-0">Motivo de la consulta</p>
                                     <div className="form-group col-lg-4 mt-3">
                                       <input value={palabra} type="text" onChange={e=>{setPalabra(e.target.value)}} placeholder="Dolor de cabeza" className="form-control"/>
@@ -1110,41 +1225,32 @@ function History() {
                                     <p className="pill" key={p}>{p}</p>
                                   ))}
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-4 mb-0">Detalle</p>
                                     <textarea placeholder="Detalle de la consulta" value={episodioValues.detalleConsulta}
                                         onChange={(e) => setEpisodioValues({...episodioValues, detalleConsulta: e.target.value})} className="mt-3 form-control col-lg-8"/>
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-7 mb-0">Examen físico</p>
                                     <div onClick={()=>{setExamFisi(true)}} className="mt-3 btn btn-secondary col-lg-3">Ver</div>
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-7 mb-0">Signos vitales</p>
                                     <div onClick={()=>{setSignosVitalesStatus(true)}} className="mt-3 btn btn-secondary col-lg-3">Ver</div>
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-7 mb-0">Diagnostico</p>
                                     <div className="mt-3 col-lg-4 custom-dropdown">
-                                      <input placeholder={tiposPatologias[0]} value={episodioValues.diagnosticoConsulta} onChange={(e)=>{ createEtiquetaDiagnostico(e.target.value) }} className="form-control"/>
-                                      <div className="custom-dropdown-box">
-                                        {tiposPatologiasNew.map((val, i)=>{
-                                            return (
-                                            <div className="custom-dropdown-option cursor-pointer" onClick={()=>{ setEpisodioValues({...episodioValues, diagnosticoConsulta: val});  setTiposPatologiasNew([]) } } key={i}>
-                                                {val}
-                                            </div>
-                                            )
-                                        })}
-                                      </div>
+                                      <input value={episodioValues.diagnosticoConsulta} onChange={(e)=>{ setEpisodioValues({...episodioValues, diagnosticoConsulta: e.target.value}) }} className="form-control"/>
                                     </div>
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-4 mb-0">Comentarios</p>
                                     <textarea placeholder="Comentarios adicionales de la consulta" value={episodioValues.comentariosConsulta} onChange={(e) => setEpisodioValues({...episodioValues, comentariosConsulta: e.target.value})} className="mt-3 form-control col-lg-8"/>
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-4 mb-0">Órdenes para estudios</p>
-                                    <select onChange={(e)=>{setOrdenEstudio(e.target.value)}} value={ordenEstudio} className="mt-3 form-control col-lg-4">
+                                    <select id="ordenEstudioInput" onChange={(e)=>{setOrdenEstudio(e.target.value)}} value={ordenEstudio} className="mt-3 form-control col-lg-4">
                                         {ordenesList.map((v, i) =>{
                                             return (
                                                 <option key={i} value={v}>{v}</option>
@@ -1166,20 +1272,23 @@ function History() {
                                     </div> */}
 
                                     <div className="form-group col-lg-4 mt-3">
-                                        <span onClick={()=>{ ordenEstudio === "" ? console.log("Error") : setOrdenesEstudio([...ordenesEstudio, ordenEstudio]) }} className={ordenEstudio === "" ? "btn btn-disabled btn-block" : "btn btn-primary btn-block"}>Añadir</span>
+                                        <span onClick={()=>{ (ordenEstudio !== "" && ordenEstudio !== "Seleccionar orden:") ? createOrden() : console.log("Error")}} className={(ordenEstudio !== "" && ordenEstudio !== "Seleccionar orden:")? "btn btn-primary btn-block" : "btn btn-disabled btn-block" }>Añadir</span>
                                     </div>
                                 </div>
-                                {ordenEstudio !== "" ?
-                                    <textarea placeholder="Nota de la órden" className="mt-3 form-control col-lg-8"/>
+                                {ordenEstudio !== "" && ordenEstudio !== "Seleccionar orden:" ?
+                                    <textarea id="ordenComentarioInput" placeholder="Nota de la órden" value={ordenComentario} onChange={(e)=>{ setOrdenComentario(e.target.value) }} className="mt-3 form-control col-lg-8"/>
                                 : <div></div>
                                 }
-                                <div className="px-3 row">
-                                  {ordenesEstudio.map(p => (
-                                    <p className="pill" key={p}>{p}</p>
+                                <div className="px-3 mt-3 row">
+                                  {ordenesEstudio.map((p, i) => (
+                                      <div className="pill" key={i}>
+                                        <p className="mb-1 strong">{p.ordenEstudio} <span className="cursor-pointer btn-delete" onClick={()=>{ setOrdenesEstudio(ordenesEstudio.filter((p1) => p1 !== p)); }} >X</span></p>
+                                        {p.ordenComentario !== "" && <p className="mb-0 light">{p.ordenComentario} </p>}
+                                      </div>
                                   ))}
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
-                                    <p className="col-lg-7 mb-0">Tratamiento</p>
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
+                                    <p className="col-lg-4 mb-0">Tratamiento</p>
                                     {/* <select onChange={(e)=>{setTratamiento({...tratamiento, nombre: e.target.value})}} value={tratamiento.nombre} className="mt-3 form-control col-lg-4"  placeholder="W">
                                         {medicamentos.map((v, i) =>{
                                             return (
@@ -1188,7 +1297,7 @@ function History() {
                                         })}
                                     </select> */}
 
-                                    <div className="mt-3 col-lg-4 custom-dropdown">
+                                    <div className="mt-0 col-lg-4 custom-dropdown">
                                       <input placeholder={medicamentos[0]} value={tratamiento.nombre} onChange={(e)=>{ createEtiquetaMedicamentos(e.target.value) }} className="form-control"/>
                                       <div className="custom-dropdown-box">
                                         {medicamentosNew.map((val, i)=>{
@@ -1200,20 +1309,26 @@ function History() {
                                         })}
                                       </div>
                                     </div>
+                                    <span onClick={()=>{ 
+                                        if(tratamiento.via && tratamiento.cant && tratamiento.unidad && tratamientoExtras.duranteText && tratamientoExtras.duranteNumber){
+                                            createTreatment();
+                                            setTratamiento({...tratamiento, nombre: ""});
+                                        }else{
+                                            console.log("Error")
+                                        }
+                                        }} 
+                                    className={tratamiento.via && tratamiento.cant && tratamiento.unidad && tratamientoExtras.frecuenciaNumber && tratamientoExtras.duranteNumber ? "btn btn-primary btn-block col-lg-4 " : "btn btn-disabled btn-block col-lg-4 "}>Añadir</span>
                                         
                                 </div>
-                                <div className="px-3 row">
+                                <div className="px-3 pt-3 row">
                                   {tratamientos.map((p, i) => (
                                     <p className="pill" key={i}>
-                                        {p.notaTratamiento}
-                                        <br/>
-                                        {p.nombre}
+                                        <p className="mb-1 strong">{p.nombre} <span className="cursor-pointer btn-delete" onClick={()=>{ setTratamientos(tratamientos.filter((p1) => p1 !== p)); }} >X</span></p>
+                                        <p className="mb-0 light">{p.notaTratamiento}</p>
                                     </p>
                                   ))}
                                 </div>
-                                {tratamiento.nombre ? 
-                                
-                                <>
+                                {tratamiento.nombre ? <>
                                     <div className="">
                                         <div className="row no-gutters">
                                             <div className="col-lg-6">
@@ -1222,20 +1337,26 @@ function History() {
                                                     <div className="col-lg-4">
                                                         <div className="mb-2">Via</div>
                                                         <select onChange={(e)=>{setTratamiento({...tratamiento, via: e.target.value})}} value={tratamiento.via} className="form-control">
+                                                            <option value=""></option>
                                                             <option value="Anal">Anal</option>
                                                             <option value="Auditiva">Auditiva</option>
                                                             <option value="Nasal">Nasal</option>
                                                             <option value="Oral">Oral</option>
                                                             <option value="Ocular">Ocular</option>
+                                                            <option value="Intravenosa">Intravenosa</option>
+                                                            <option value="Implante">Implante</option>
+                                                            <option value="Intramuscular">Intramuscular</option>
+                                                            <option value="Intradérmico">Intradérmico</option>
                                                         </select>
                                                     </div>
-                                                    <div className="col-lg-4">
+                                                    <div className="col-lg-3">
                                                         <div className="mb-2">Cantidad</div>
-                                                        <input onChange={(e)=>{setTratamiento({...tratamiento, cant: e.target.value})}} value={tratamiento.cant} className="form-control"/>
+                                                        <input placeholder="0" type="number" onChange={(e)=>{setTratamiento({...tratamiento, cant: e.target.value})}} value={tratamiento.cant} className="form-control"/>
                                                     </div>
                                                     <div className="col-lg-4">
                                                         <div className="mb-2">Unidad</div>
                                                         <select onChange={(e)=>{setTratamiento({...tratamiento, unidad: e.target.value})}} value={tratamiento.unidad} className="form-control">
+                                                            <option value=""></option>
                                                             <option value="Capsulas">Cápsulas</option>
                                                             <option value="Gotas">Gotas</option>
                                                             <option value="Ampollas">Ampollas</option>
@@ -1248,31 +1369,44 @@ function History() {
                                             <div className="col-lg-6">
                                                 <div className="treatment-header">Duración</div>
                                                 <div className="treatment-body row">
-                                                    <div className="col-lg-6">
+                                                    <div className="col-lg-6 items-center">
                                                         <div className="mb-2">Frecuencia</div>
-                                                        <div className="row no-gutters">
-                                                            <input onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, frecuenciaNumber: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-6"/>
-                                                            <select onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, frecuenciaText: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-6">
-                                                                <option value="Minutos">Minutos</option>
-                                                                <option value="Horas">Horas</option>
-                                                                <option value="Dias">Dias</option>
-                                                                <option value="Interdiaria">Interdiaria</option>
-                                                                <option value="Semanas">Semanas</option>
-                                                                <option value="Meses">Meses</option>
-                                                                <option value="Años">Años</option>
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-6">
-                                                        <div className="mb-2">Durante</div>
-                                                        <div className="row no-gutters">
-                                                            <input onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, duranteNumber: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-6"/>
-                                                            <select onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, duranteText: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-6">
+                                                        <div className="row no-gutters items-center">
+                                                            <input placeholder="0" type="number" onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, frecuenciaNumber: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-3"/>
+                                                            <select onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, frecuenciaText: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-7">
+                                                                <option value=""></option>
                                                                 <option value="Horas">Horas</option>
                                                                 <option value="Dias">Días</option>
                                                                 <option value="Semanas">Semanas</option>
                                                                 <option value="Meses">Meses</option>
-                                                                <option value="Anos">Años</option>
+                                                                <option value="Años">Años</option>
+                                                                {/* <option value="Minutos">Minutos</option>
+                                                                <option value="Horas">Horas</option>
+                                                                <option value="Dias">Dias</option> */}
+                                                                {/* <option value="Interdiaria">Interdiaria</option>
+                                                                <option value="Semanas">Semanas</option>
+                                                                <option value="Meses">Meses</option> */}
+{/*                                                                 <option value="Años">Años</option>
+                                                                <option value="Dia">Dia</option> */}
+                                                                {/* <option value="Diaria">Diaria</option>
+                                                                <option value="Mañanas">Mañanas</option>
+                                                                <option value="Noches">Noches</option>
+                                                                <option value="Mañana y noche">Mañana y noche</option>
+                                                                <option value="Después de cada comida">Después de cada comida</option> */}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-lg-6 items-center">
+                                                        <div className="mb-2">Durante</div>
+                                                        <div className="row no-gutters items-center">
+                                                            <input placeholder="0" type="number" onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, duranteNumber: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-3"/>
+                                                            <select onChange={(e)=>{setTratamientoExtras({...tratamientoExtras, duranteText: e.target.value})}} value={tratamientoExtras.nombre} className="form-control col-lg-7">
+                                                                <option value=""></option>
+                                                                <option value="Horas">Horas</option>
+                                                                <option value="Dias">Días</option>
+                                                                <option value="Semanas">Semanas</option>
+                                                                <option value="Meses">Meses</option>
+                                                                <option value="Años">Años</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -1280,23 +1414,27 @@ function History() {
                                             </div>
                                         </div>
                                     </div>
-                                    <textarea onChange={(e)=>{setTratamiento({...tratamiento, notaTratamiento: e.target.value})}} value={tratamiento.notaTratamiento} placeholder="Nota del tratamiento" className="my-2 form-control col-lg-12"/>
-                                    <div className="form-group mt-3">
-                                        <span onClick={()=>{ tratamiento.via && tratamiento.cant && tratamiento.unidad && tratamientoExtras.frecuenciaNumber && tratamientoExtras.duranteNumber ? createTreatment() : console.log("Error") }} 
-                                        className={tratamiento.via && tratamiento.cant && tratamiento.unidad && tratamientoExtras.frecuenciaNumber && tratamientoExtras.duranteNumber ? "btn btn-primary btn-block" : "btn btn-disabled btn-block"}>Cargar tratamiento</span>
-                                    </div>
-                                </>
-
+                                    <textarea onChange={(e)=>{setTratamiento({...tratamiento, notaTratamiento: e.target.value})}} value={tratamiento.notaTratamiento} placeholder="Nota del tratamiento" className="my-2 form-control col-lg-12"/> </>
                                 : <div></div>}
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-4 mb-0">Instrucciones adicionales</p>
                                     <textarea placeholder="Instrucciones adicionales de la consulta" value={episodioValues.instruccionesAdicionalesConsulta} onChange={(e) => setEpisodioValues({...episodioValues, instruccionesAdicionalesConsulta: e.target.value})} className="mt-3 form-control col-lg-8"/>
                                 </div>
-                                <div className="row align-items-center justify-content-spacebetween">
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
                                     <p className="col-lg-4 mb-0">Órden especialista</p>
                                     <input placeholder="Nombre de la especialidad" value={episodioValues.ordenEspecialista} onChange={(e) => setEpisodioValues({...episodioValues, ordenEspecialista: e.target.value})} className="mt-3 form-control col-lg-8"/>
                                 </div>
-                                <div onClick={()=>{ palabrasClave.length > 0 ? saveEpisode() : console.log()}} className={`btn ${ palabrasClave.length > 0 ? "btn-primary" : "btn-disabled"}`}>
+                                <div className="creation-card mb-2 border py-1 row align-items-center justify-content-spacebetween">
+                                    <p className="col-lg-4 mb-0">Tipo de entrega</p>
+                                    <select onChange={(e) => setTipoEntrega(e.target.value)} className="mt-3 form-control col-lg-8">
+                                        <option value=""></option>
+                                        <option value="Completo">Completo</option>
+                                        <option value="Parcial">Parcial</option>
+                                        <option value="No entregado">No entregado</option>
+                                    </select>
+                                </div>
+                                {/* <div onClick={()=>{ tratamientos.length > 0 ? saveEpisode() : console.log()}} className={`btn ${ tratamientos.length > 0 ? "btn-primary" : "btn-disabled"}`}> */}
+                                <div onClick={()=>{ saveEpisode() }} className={`btn btn-primary`}>
                                     Guardar
                                 </div>
                             </div>
@@ -1602,6 +1740,47 @@ function History() {
                     {/* End General */}
                     {/* Antecedentes y otros episodios */}
                     <div className="col-lg-4">
+                        <div className="antecedentes-box">
+                            <div className="antecedentes-box-title">
+                                Información del paciente
+                            </div>
+                            <div className="mx-2">
+                                <div className="box-info text-center mb-3">
+                                    <img src={patient.url ?? patient.petthumbnailUrl} className="box-info-img"/>
+                                </div>
+                                <div className="mb-3 border-bottom">
+                                    <div className="expedient-label-text">
+                                        Nombre del paciente
+                                    </div>
+                                    {data.state["isOwner"] ? 
+                                        <div className="expedient-value-text">
+                                            {patient?.user} {patient?.dadsLastName ?? ""} {patient?.momsLastName ?? ""}
+                                        </div>
+                                    : 
+                                        <div className="expedient-value-text">
+                                            {patient?.nombre} {patient?.apellido ?? ""}
+                                        </div>
+                                    }
+                                </div>
+                                <div className="mb-3 border-bottom">
+                                    <div className="expedient-label-text">
+                                        Edad
+                                    </div>
+                                    <div className="expedient-value-text">
+                                        {patient?.edad}
+                                    </div>
+                                </div>
+                                <div className="mb-3">
+                                    <div className="expedient-label-text">
+                                        Sexo
+                                    </div>
+                                    <div className="expedient-value-text">
+                                        {patient?.sexo ?? "Mujer"}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                         <div className={antecedentesStatus || antecedentes === undefined ? "d-none" : "antecedentes-box"}>
                             <div className="antecedentes-box-title">
                                 Antecedentes
@@ -1655,13 +1834,146 @@ function History() {
         </div>
     </MuiPickersUtilsProvider>
     )
+
+    function findEnglishTranslation(value){
+        let translated = ""
+
+        let traductions = [
+            {ESP:"Horas", ENG: "hours"},
+            {ESP:"Dias", ENG: "days"},
+            {ESP:"Semanas", ENG: "days"},
+            {ESP:"Meses", ENG: "months"},
+            {ESP:"Años", ENG: "years"},
+        ]
+
+        translated = traductions.find((prv)=>( prv["ESP"] === value ))["ENG"]
+
+        return translated
+    }
     
+    function findComplexWord(value){
+        let translated = ""
+
+        let traductions = [
+            {propWord:"Anal", complexWord: "aplicarte"},
+            {propWord:"Auditiva", complexWord: "aplicarte"},
+            {propWord:"Nasal", complexWord: "aplicarte"},
+            {propWord:"Oral", complexWord: "tomar"},
+            {propWord:"Ocular", complexWord: "aplicarte"},
+        ]
+
+        translated = traductions.find((prv)=>( prv["propWord"] === value ))["complexWord"]
+
+        return translated
+    }
+
+    function convertWeeksInDays(propValue){
+        let number = parseInt(propValue) * 7
+        return number
+    }
+
+    function formatTreatmentToList(propList){
+        let list = []
+        list = [...propList].map((prv, i)=>({
+            title: `Tomar ${prv["nombre"]}`,
+            description: `Tomar ${prv["nombre"]}`,
+            index: i,
+            is_critique: true,
+            type: 2,
+            start_trigger: 3,
+            trigger_measure: findEnglishTranslation(prv["frecuenciaText"]),
+            trigger_value: prv["frecuenciaText"] !== "Semanas" ? prv["frecuenciaNumber"] : convertWeeksInDays(prv["frecuenciaNumber"]),
+            until_trigger: 1,
+            until_trigger_measure: findEnglishTranslation(prv["duranteText"]),
+            until_trigger_value: prv["duranteText"] !== "Semanas" ? prv["duranteNumber"] : convertWeeksInDays(prv["duranteNumber"]),
+            gamification_points: 0,
+            market_points: 0,
+            video_url: "",
+            meta_data: [
+                {key: "dose", value: `${prv["cant"]} ${prv["unidad"]}`, lang: "ES"},
+                {key: "medicine", value: prv["nombre"], lang: "ES"},
+                {key: "frequency", value: prv["frecuencia"], lang: "ES"}
+            ],
+            notifications: [
+                {
+                    message: `Recuerda que en 5 minutos debes ${findComplexWord(prv["via"])} ${prv["cant"] + " " + prv["unidad"]} de ${prv["nombre"]}`,
+                    trigger: "before",
+                    type: "push",
+                    trigger_measure: "minutes",
+                    trigger_value: 5
+                }
+            ]
+        }))
+        return list
+    }
+    
+    async function createProgram(){
+        
+        let programObject = {
+            name: `Tratamiento para ${episodioValues.diagnosticoConsulta}`,
+            description: episodioValues.detalleConsulta ?? "",
+            is_default: false,
+            contract_type: 1,
+            type: 2,
+            subject_id: data.state.mid,
+            provider_id: user.aliadoId,
+            activities: formatTreatmentToList(tratamientos)
+        }
+
+        let url = "https://xentralyapi.com/ema/program"
+
+        let fetchConfig = {
+            method: 'POST', 
+            mode:'cors',
+            crossDomain: true,
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify(programObject) 
+        };
+
+        //let res = await axios.post(url, programObject)
+        let res = await fetch(url, fetchConfig)
+        
+        if(!res.ok){
+            return "2"
+        }
+
+        let r = await res.json()
+        return r["programId"]
+
+    }
+
     async function saveEpisode(){
-        setSucessMessage("Consulta guardada exitosamente")
-        setSuccess(true)
+        let programId = ""
+        
+        if(tratamientos.length > 0){
+            programId = await createProgram()
+            if(programId === "2"){
+                setErrorMessage("Ha ocurrido un error")
+                setError(true)
+            }else{
+                handleNewEpisode(programId)
+            }
+        }else{
+            handleNewEpisode("")
+        }
+    }
+
+    function handleNewEpisode(programId){
         let id = Date.now().toString()
         try{
-            await firebase.db.collection("Expedientes").doc(data.state.mid).collection("Episodios").doc(id).set({
+            firebase.db.collection("Expedientes").doc(data.state.mid).collection("Episodios").doc(id).set({
+                unidadMedica: "",
+                beneficiario: data.state["isOwner"] ? "Titular" : patient?.parentesco,
+                user: data.state["isOwner"] ? patient?.user : patient?.nombre,
+                dadsLastName: data.state["isOwner"] ? patient?.dadsLastName : patient?.apellido,
+                momsLastName: data.state["isOwner"] ? patient?.momsLastName : "",
+                identificacion: patient?.identificacion ?? "",
+                edad: patient?.edad ?? "",
+                sexo: patient?.sexo ?? "",
+                telefono: patient?.telefono ?? "",
+                tipoEntrega: tipoEntrega ?? "",
+                operatorId: user.aliadoId ?? "",
+                uid: data.state.mid,
                 idConsulta: id,
                 fechaConsulta: fechaConsulta ? fechaConsulta.toDate() : moment().toDate(),
                 signosVitales: valores,
@@ -1678,16 +1990,19 @@ function History() {
                 anteAparatosValues,
                 ordenesEstudio,
                 tratamientos,
+                programId: programId,
                 detalleConsulta: episodioValues.detalleConsulta,
                 diagnosticoConsulta: episodioValues.diagnosticoConsulta,
                 comentariosConsulta: episodioValues.comentariosConsulta,
                 instruccionesAdicionalesConsulta: episodioValues.instruccionesAdicionalesConsulta
             }).then((val)=>{
-                updateAntecedentes()
+                setListoConsulta(true)
             })
         }catch(e){
             console.log(e)
         }
+        setSucessMessage("Consulta guardada exitosamente")
+        setSuccess(true)
     }
     
     async function updateAntecedentes(){

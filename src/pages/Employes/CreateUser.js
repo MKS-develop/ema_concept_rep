@@ -37,40 +37,22 @@ function CreateUser() {
         setFile(e.target.files[0]);
     }
     
-    function getAliados(){
+    async function getRoles(){
         let tipos = []
-        firebase.db.collection('TipoAliado').get().then(data=>{  
-        data.forEach(tipo=>{
-            tipos.push(tipo.id)
-            tipos.sort()
-        })
-        setAliados(tipos)
-        })
-        .catch(e=>{
-        console.error("Error TipoAliado:",e)
-        })
-    }
-
-    async function getRoles(id){
-        let tipos = []
-        await firebase.db.collection('Roles').where("aliadoId", "==", id).get().then(data=>{  
+        await firebase.db.collection('Roles').get().then(data=>{  
             data.docs.forEach(tipo=>{
                 tipos.push(tipo.data())
             })
-            setRoles(tipos)
         });
+        setRoles(tipos)
     }
 
     useEffect(() => {
-        async function fetchData() {
-            await firebase.getCurrentUser().then((val)=>{
-                setUser(val)
-                getRoles(val.aliadoId)
-            })
-        }
-        fetchData()
-        getAliados()
-    })
+        firebase.getCurrentUser().then((val)=>{
+            setUser(val)
+        })
+        getRoles()
+    }, [])
 
     return (
 
@@ -99,57 +81,55 @@ function CreateUser() {
             </div>
             <div className="row w-100">
                 <div className="col-lg-5 col-md-5 col-sm-12 mx-auto">
-                    <form onSubmit={e => e.preventDefault() && false }>
-                        <div className="card">
-                            <div className="card-header text-center">
-                                <h4>Crear usuario</h4>
-                            </div>
-                            <div className="px-4 py-4">
-                                <div className="mb-5">
-                                  
-                                  <input type="file"
-                                    ref={hiddenFileInput}
-                                    onChange={handleChange} 
-                                    style={{display: 'none'}}
-                                  />
-                                  <div onClick={handleClick} className="register-img">
-                                    {src !== "" ? <img src={src} alt="" /> : <div className="register-img-upload"><p className="material-icons icon mb-0">add</p></div>}
-                                  </div>
+                <div className="card">
+                    <div className="card-header text-center">
+                        <h4>Crear usuario</h4>
+                    </div>
+                    <div className="px-4 py-4">
+                        <div className="mb-5">
+                          
+                          <input type="file"
+                            ref={hiddenFileInput}
+                            onChange={handleChange} 
+                            style={{display: 'none'}}
+                          />
+                          <div onClick={handleClick} className="register-img">
+                            {src !== "" ? <img src={src} alt="" /> : <div className="register-img-upload"><p className="material-icons icon mb-0">add</p></div>}
+                          </div>
+                        </div>
+                        <div className="form-group">
+                            <input type="text" className="form-control" onChange={(e) => setNombreCompleto(e.target.value)} placeholder="Nombre del usuario" value={nombreCompleto} />
+                        </div>
+                        <div className="form-group">
+                          <select placeholder="Pureba" className="form-control" value={rol} onChange={e => setRol(e.target.value)}>
+                              <option>Selecciona el rol del usuario</option>
+                            {roles.map((data, i) => (
+                                <option key={i} value={data.roleId}>{data.roleId}</option>
+                            ))}
+                          </select>
+                        </div>    
+                        <div className="form-group">
+                            <input type="text" className="form-control" onChange={(e) => setTelefono(e.target.value)} placeholder="Teléfono" value={telefono} />
+                        </div>
+                        <div className="form-group">
+                            <input type="text" className="form-control" onChange={(e) => setIdentificacion(e.target.value)} placeholder="Identificación" value={identificacion} />
+                        </div>
+                        <div className="form-group">
+                            <input type="text" className="form-control" onChange={(e) => setEmail(e.target.value)} placeholder="Email" value={email} />
+                        </div>
+                        <div className="form-group">
+                            <div className="row align-items-center">
+                                <div className="col-md-11">
+                                    <input type={sp ? "text" : "password"} className="form-control" onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" value={password} />
                                 </div>
-                                <div className="form-group">
-                                    <input type="text" className="form-control" onChange={(e) => setNombreCompleto(e.target.value)} placeholder="Nombre del usuario" value={nombreCompleto} />
-                                </div>
-                                <div className="form-group">
-                                  <select placeholder="Pureba" className="form-control" value={rol} onChange={e => setRol(e.target.value)}>
-                                      <option>Selecciona el rol del usuario</option>
-                                    {roles.map(data => (
-                                        <option key={data.roleId} value={data.roleId}>{data.roleNombre}</option>
-                                    ))}
-                                  </select>
-                                </div>    
-                                <div className="form-group">
-                                    <input type="text" className="form-control" onChange={(e) => setTelefono(e.target.value)} placeholder="Teléfono" value={telefono} />
-                                </div>
-                                <div className="form-group">
-                                    <input type="text" className="form-control" onChange={(e) => setIdentificacion(e.target.value)} placeholder="Identificación" value={identificacion} />
-                                </div>
-                                <div className="form-group">
-                                    <input type="text" className="form-control" onChange={(e) => setEmail(e.target.value)} placeholder="Email" value={email} />
-                                </div>
-                                <div className="form-group">
-                                    <div className="row align-items-center">
-                                        <div className="col-md-11">
-                                            <input type={sp ? "text" : "password"} className="form-control" onChange={(e) => setPassword(e.target.value)} placeholder="Contraseña" value={password} />
-                                        </div>
-                                        <span onClick={()=>{setShowPassword(!sp)}} className="material-icons mb-0">{sp ? "visibility_off" : "visibility" }</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card-footer">
-                                <button onClick={()=>{onRegister()}} className="btn btn-primary btn-block">{btnMessage}</button>
+                                <span onClick={()=>{setShowPassword(!sp)}} className="material-icons mb-0">{sp ? "visibility_off" : "visibility" }</span>
                             </div>
                         </div>
-                    </form>
+                    </div>
+                    <div className="card-footer">
+                        <button onClick={()=>{onRegister()}} className="btn btn-primary btn-block">{btnMessage}</button>
+                    </div>
+                </div>
                 </div>
             </div>
 
@@ -159,10 +139,26 @@ function CreateUser() {
     async function onRegister() {
         setBtnMessage("Cargando...")
         try {
-            await firebase.storage.ref(`/Aliados imagenes/${file.name}`).put(file)
-            await firebase.storage.ref("Aliados imagenes").child(file.name).getDownloadURL().then((urlI) => {
+            if(file){
+                await firebase.storage.ref(`/Aliados imagenes/${file.name}`).put(file)
+                await firebase.storage.ref("Aliados imagenes").child(file.name).getDownloadURL().then((urlI) => {
+                    const userInfo = {
+                        avatar: urlI,
+                        nombre: nombreCompleto,
+                        nombreComercial: user.nombreComercial,
+                        tipoEmpresa: user.tipoEmpresa, 
+                        tipoAliado: user.tipoAliado, 
+                        telefono: telefono,
+                        identificacion: identificacion,
+                        direccion: direccion,
+                        role: rol,
+                    }
+                    firebase.createRoleUser(email, password, userInfo, urlI)                    
+                })
+                
+            }else{
                 const userInfo = {
-                    avatar: urlI,
+                    avatar: "",
                     nombre: nombreCompleto,
                     nombreComercial: user.nombreComercial,
                     tipoEmpresa: user.tipoEmpresa, 
@@ -172,8 +168,8 @@ function CreateUser() {
                     direccion: direccion,
                     role: rol,
                 }
-                firebase.createRoleUser(email, password, userInfo, urlI)                    
-            })
+                firebase.createRoleUser(email, password, userInfo, "")
+            }
         } catch(e) {
             setBtnMessage("Crear usuario")
             switch(e.message) {

@@ -200,7 +200,7 @@ function Resume() {
             </div>
             <div className="container row align-items-center">
               <div className="col-md-4 col-sm-12 mb-4">
-                <CardResume mesAnterior={cal} mesActual={calT} titulo="Clientes" cantidad={lengthO}/>
+                <CardResume mesAnterior={cal} mesActual={calT} titulo="Pacientes" cantidad={lengthO}/>
               </div>
               <div className="col-md-4 col-sm-12 mb-4">
                 <CardResume mesAnterior={cal2} mesActual={calT2} titulo="Órdenes procesadas" cantidad={lengthO2}/>

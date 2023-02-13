@@ -24,7 +24,7 @@ function Login() {
 			<main className="h-100vh row flow-column align-items-center">
 				<form className="login-form-container" onSubmit={e => e.preventDefault() && false }>
 					<div className="form-image">
-						<img src="../images/logo.png" alt="MKS Salud Aliados Aliados" alt=""/>
+						<img src="../images/logo.png" alt="EMA  Aliados Aliados"/>
 					</div>
 					<div className="bg-white w-100 text-center rounded p-4">
 						<div className="form-group col-lg-12 mb-4">

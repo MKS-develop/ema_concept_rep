@@ -27,19 +27,21 @@ class AgendaConfig {
         var Sminute = parseInt(startTime2[1]);
         
         var Ehour = parseInt(endTime2[0]);
-        // var Eminute = parseInt(endTime2[1]);
+        var Eminute = parseInt(endTime2[1]);
 
-        var timea = Shour + ":" + Sminute
-        list.push(timea)
+        
         do {
+            var time = Shour + ":" + (Sminute >= 60 ? 0 : Sminute)
+            list.push(time)
             Sminute += durationInMinutes
-            if(Sminute >= 60) {
+            console.log(parseInt(Shour + (Sminute.toString() === "0" ? "00" : Sminute)) + " - " + parseInt(Ehour + ( Eminute.toString() === "0" ? "00" : Eminute )))
+
+            while(Sminute >= 60){
+                console.log(Sminute >= 60)
                 Sminute -= 60
                 Shour++
             }
-            var time = Shour + ":" + Sminute
-            list.push(time)
-        } while (Shour < Ehour)
+        } while (parseInt(Shour.toString() + (Sminute.toString() === "0" ? "00" : Sminute.toString())) < parseInt(Ehour.toString() + ( Eminute.toString() === "0" ? "00" : Eminute.toString() )))
         list.forEach((time)=> {
             const a = time.split(":")
             if(parseInt(a[1]) < 10){
@@ -72,7 +74,7 @@ class AgendaConfig {
 
         var horaDD = parseInt(horaD[0]);
         var horaMD = parseInt(horaD[1]);
-
+        console.log(time)
         for(let i = 0; i < time.length; i++){
             var hora = time[i].split(":");
             var horaHH = parseInt(hora[0]);

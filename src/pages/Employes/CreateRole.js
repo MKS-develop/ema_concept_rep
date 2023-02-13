@@ -9,16 +9,14 @@ function CreateRole() {
     const [user, setUser] = useState({})
     const [emessage, setEmessage] = useState("")
     const [error, setError] = useState(false)
-    const [orders, setOrders] = useState(false)
-    const [claims, setClaims] = useState(false)
-    const [clients, setClients] = useState(false)
-    const [message, setMessage] = useState(false)
-    const [refereds, setRefereds] = useState(false)
-    const [services, setServices] = useState(false)
-    const [promotions, setPromotions] = useState(false)
-    const [products, setProducts] = useState(false)
-    const [number, setNumber] = useState(0)
+    const [canMakeReserves, setCanMakeReserves] = useState(false)
+    const [canAccessAgenda, setCanAccessAgenda] = useState(false)
+    const [canViewClients, setCanViewClients] = useState(false)
+    const [canChargeFile, setCanChargeFile] = useState(false)
+    const [canViewAllCenters, setCanViewAllCenters] = useState(false)
+    const [canFilterByStatus, setCanFilterByStatus] = useState(false)
 
+    const [number, setNumber] = useState(0)
 
     const [nameRole, setNameRole] = useState(null)
 
@@ -68,54 +66,45 @@ function CreateRole() {
                 </div>
             </div>
                 <div className="row">
+                    
                     <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setOrders(!orders); if(orders){setNumber(number - 1)}else{setNumber(number + 1)}}} className={orders ? "role-button active" : "role-button"}>
+                        <div onClick={()=>{setCanMakeReserves(!canMakeReserves); if(canMakeReserves){setNumber(number - 1)}else{setNumber(number + 1)}}} className={canMakeReserves ? "role-button active" : "role-button"}>
                             <i className="material-icons">inbox</i>
-                            <p className="mb-0">Órdenes</p>
+                            <p className="mb-0">canMakeReserves</p>
                         </div>
                     </div>
                     <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setClaims(!claims); setNumber(number + 1); if(claims){setNumber(number - 1)}else{setNumber(number + 1)} }} className={claims ? "role-button active" : "role-button"}>
-                            <i className="material-icons">error_outline</i>
-                            <p className="mb-0">Reclamos</p>
+                        <div onClick={()=>{setCanAccessAgenda(!canAccessAgenda); if(canAccessAgenda){setNumber(number - 1)}else{setNumber(number + 1)}}} className={canAccessAgenda ? "role-button active" : "role-button"}>
+                            <i className="material-icons">inbox</i>
+                            <p className="mb-0">canAccessAgenda</p>
                         </div>
                     </div>
                     <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setClients(!clients); setNumber(number + 1); if(clients){setNumber(number - 1)}else{setNumber(number + 1)} }} className={clients ? "role-button active" : "role-button"}>
-                            <i className="material-icons">people</i>
-                            <p className="mb-0">Clientes</p>
+                        <div onClick={()=>{setCanViewClients(!canViewClients); if(canViewClients){setNumber(number - 1)}else{setNumber(number + 1)}}} className={canViewClients ? "role-button active" : "role-button"}>
+                            <i className="material-icons">inbox</i>
+                            <p className="mb-0">canViewClients</p>
                         </div>
                     </div>
                     <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setMessage(!message); setNumber(number + 1); if(message){setNumber(number - 1)}else{setNumber(number + 1)} }} className={message ? "role-button active" : "role-button"}>
-                            <i className="material-icons">chat</i>
-                            <p className="mb-0">Mensajes</p>
+                        <div onClick={()=>{setCanChargeFile(!canChargeFile); if(canChargeFile){setNumber(number - 1)}else{setNumber(number + 1)}}} className={canChargeFile ? "role-button active" : "role-button"}>
+                            <i className="material-icons">inbox</i>
+                            <p className="mb-0">canChargeFile</p>
                         </div>
                     </div>
                     <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setRefereds(!refereds); setNumber(number + 1); if(refereds){setNumber(number - 1)}else{setNumber(number + 1)} }} className={refereds ? "role-button active" : "role-button"}>
-                            <i className="material-icons">drafts</i>
-                            <p className="mb-0">Referidos</p>
+                        <div onClick={()=>{setCanViewAllCenters(!canViewAllCenters); if(canViewAllCenters){setNumber(number - 1)}else{setNumber(number + 1)}}} className={canViewAllCenters ? "role-button active" : "role-button"}>
+                            <i className="material-icons">inbox</i>
+                            <p className="mb-0">canViewAllCenters</p>
                         </div>
                     </div>
                     <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setServices(!services); setNumber(number + 1); if(services){setNumber(number - 1)}else{setNumber(number + 1)} }} className={services ? "role-button active" : "role-button"}>
-                            <i className="material-icons">work</i>
-                            <p className="mb-0">Servicios</p>
+                        <div onClick={()=>{setCanFilterByStatus(!canFilterByStatus); if(canFilterByStatus){setNumber(number - 1)}else{setNumber(number + 1)}}} className={canFilterByStatus ? "role-button active" : "role-button"}>
+                            <i className="material-icons">inbox</i>
+                            <p className="mb-0">canFilterByStatus</p>
                         </div>
                     </div>
-                    <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setPromotions(!promotions); setNumber(number + 1); if(promotions){setNumber(number - 1)}else{setNumber(number + 1)} }} className={promotions ? "role-button active" : "role-button"}>
-                            <i className="material-icons">grade</i>
-                            <p className="mb-0">Promociones</p>
-                        </div>
-                    </div>
-                    <div className="col-lg-3 col-sm-12">
-                        <div onClick={()=>{setProducts(!products); setNumber(number + 1); if(products){setNumber(number - 1)}else{setNumber(number + 1)} }} className={products ? "role-button active" : "role-button"}>
-                            <i className="material-icons">shopping_cart</i>
-                            <p className="mb-0">Productos</p>
-                        </div>
-                    </div>
+
+
                 </div>
 
           </div>
@@ -129,28 +118,14 @@ function CreateRole() {
                 roleId: roleId,
                 aliadoId: user.aliadoId,
                 roleNombre: nameRole,
-                activeOrders: orders,
-                activeClaims: claims,
-                activeClients: clients,
-                activeMessage: message,
-                activeRefereds: refereds,
-                activeServices: services,
-                activePromotions: promotions,
-                activeProducts: products,
+                canMakeReserves,
+                canAccessAgenda,
+                canViewClients,
+                canChargeFile,
+                canViewAllCenters,
+                canFilterByStatus
             }).then((val)=>{
-                if(services){
-                    history.push({
-                        state: {roleId: roleId, products: products},
-                        pathname: "/create-role/addservices"
-                    })
-                }else if(!services && products){
-                    history.push({
-                        state: {roleId: roleId},
-                        pathname: "/create-role/addproducts"
-                    })
-                }else if(!services && !products){
-                    window.location.href = "/employes"
-                }
+                window.location.href = "/employes"
             })
         } catch(e) {
             alert(e)

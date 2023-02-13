@@ -65,7 +65,7 @@ function Employes() {
               </div>
               <div className="form-row align-items-center justify-content-space-between mb-4">
                 <Link to="/create-user" className="btn btn-secondary mr-3">Agregar usuario</Link>
-                <Link to="/create-role" className="btn btn-outline-secondary">Crear rol</Link>
+                {/* <Link to="/create-role" className="btn btn-outline-secondary">Crear rol</Link> */}
               </div>
               <div className="row">
                   <div className="col-lg-12 col-md-12 col-sm-12">
@@ -95,9 +95,9 @@ function Employes() {
                       {
                         aliados.length > 0 ? aliados.map(aliado=>{
                           return(
-                            <div onClick={() => setAliado(aliado)} key={aliado.aliadoId} className="mb-2 row order-child align-items-center">
+                            <div onClick={() => setAliado(aliado)} key={aliado.aliadoId} style={{padding: "8px 12px"}} className="mb-2 row order-child align-items-center">
                               <div className="col-md-1 color-primary">
-                                <img className="client-avatar-preview rounded-circle mr-2" src={aliado.avatar ?? "cargando"} alt="Aliado Avatar"/>
+                                <img className="client-avatar-preview rounded-circle mr-2" src={aliado.avatar ?? "https://toppng.com/uploads/preview/free-icons-png-call-center-icon-circle-11563051028y6ypidiusb.png "} alt="avatar"/>
                               </div>
                               <div className="col-md-3 ">
                                 <p className="mb-0">{aliado.nombre}</p>
@@ -109,10 +109,10 @@ function Employes() {
                                 <p className="mb-0"></p>
                               </div>
                               <div className="col-md-2 color-success">
-                                <p className="mb-0">{aliado.rol}</p>
+                                <p className="mb-0">{aliado.role}</p>
                               </div>
                               <div className="col-md-1">
-                                <p className="mb-0 material-icons">visibility</p>
+                                <p className="mb-0 material-icons"></p>
                               </div>
                             </div>
                           )
@@ -140,31 +140,37 @@ function Employes() {
                   </div>
                 </div>
               </div>
+              <div className="row mb-5 container">
+                <h3 className="mb-0">Empleado</h3>
+                <div onClick={()=>{ updateUser() }} className={`btn ml-5 btn-outline-primary`}>
+                  Actualizar
+                </div>
+              </div>
               <h3 className="mb-5">Detalle del usuario</h3>
               <div className="row">
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Nombre del usuario</p>
-                  <p>{aliado.nombre}</p>
+                <div className="col-lg-4 mb-4">
+                  <p className="mb-2 bold color-primary">Nombre del usuario</p>
+                  <input className='form-control' defaultValue={aliado?.nombre} onChange={(e)=>{ setAliado({...aliado, nombre: e.target.value}) }} />
                 </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Status</p>
-                  <p>{aliado.status}</p>
+                <div className="col-lg-4 mb-4">
+                  <p className="mb-2 bold color-primary">Dirección</p>
+                  <input className='form-control' defaultValue={aliado?.direccion} onChange={(e)=>{ setAliado({...aliado, direccion: e.target.value}) }} />
                 </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">email</p>
-                  <p>{aliado.email}</p>
+                <div className="col-lg-4 mb-4">
+                  <p className="mb-2 bold color-primary">email</p>
+                  <p>{aliado?.email}</p>
                 </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Tipo de aliado</p>
-                  <p>{aliado.tipoAliado}</p>
+                <div className="col-lg-4 mb-4">
+                  <p className="mb-2 bold color-primary">Tipo de aliado</p>
+                  <input className='form-control' defaultValue={aliado?.tipoAliado} onChange={(e)=>{ setAliado({...aliado, tipoAliado: e.target.value}) }} />
                 </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Tipo de empresa</p>
-                  <p>{aliado.tipoEmpresa}</p>
+                <div className="col-lg-4 mb-4">
+                  <p className="mb-2 bold color-primary">Tipo de empresa</p>
+                  <input className='form-control' defaultValue={aliado?.tipoEmpresa} onChange={(e)=>{ setAliado({...aliado, tipoEmpresa: e.target.value}) }} />
                 </div>
-                <div className="col-lg-4">
-                  <p className="mb-0 bold color-primary">Teléfono</p>
-                  <p>{aliado.telefono}</p>
+                <div className="col-lg-4 mb-4">
+                  <p className="mb-2 bold color-primary">Teléfono</p>
+                  <input className='form-control' defaultValue={aliado?.telefono} onChange={(e)=>{ setAliado({...aliado, telefono: e.target.value}) }} />
                 </div>
               </div>
 
@@ -172,6 +178,14 @@ function Employes() {
 
           </div>
     )
+
+  async function updateUser(){
+    try {
+      await firebase.db.collection("Aliados").doc(aliado["aliadoId"]).update(aliado)
+    } catch (e) {
+      console.log(e)
+    }
+  }
 
 }
 

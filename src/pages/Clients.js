@@ -6,30 +6,28 @@ function Client() {
 
     const data = useLocation()
     const [user, setUser] = useState({})
-    const [cliente, setCliente] = useState({})
-    const [clientePlan, setClientePlan] = useState({})
-    const [clientePetPoints, setClientePP] = useState({})
+    const [paciente, setCliente] = useState({})
+    const [pacientePlan, setClientePlan] = useState({})
+    const [pacientePetPoints, setClientePP] = useState({})
+    const [role, setRole] = useState({})
 
-    async function getClient(clienteId){
-        await firebase.db.collection("Dueños").doc(clienteId).get().then((val)=>{
+    async function getClient(pacienteId){
+        await firebase.db.collection("Dueños").doc(pacienteId).get().then((val)=>{
             setCliente(val.data())
-        })
-        await firebase.db.collection("Dueños").doc(clienteId).collection("Plan").doc(clienteId).get().then((val)=>{
-            setClientePlan(val.data())
-        })
-        await firebase.db.collection("Dueños").doc(clienteId).collection("Petpoints").doc(clienteId).get().then((val)=>{
-            setClientePP(val.data())
         })
     }
 
     useEffect(() => {
-        if(data.state === undefined || data.state === null){
-          window.location.href = "/agenda"
-        }
-        firebase.getCurrentUser().then((val)=>{
-          setUser(val)
+      if(data.state === undefined || data.state === null){
+        window.location.href = "/agenda"
+      }
+      firebase.getCurrentUser().then((val)=>{
+        setUser(val)
+        firebase.getRoleInfo(val.role ?? "Administrador").then((r)=>{
+          setRole(r)
         })
-        getClient(data.state.clienteId)
+      })
+      getClient(data.state.pacienteId)
     }, [])
     
     return (
@@ -49,43 +47,43 @@ function Client() {
             </div>
           </div>
         </div>
-        <h3 className="mb-5">Detalles del cliente</h3>
+        <h3 className="mb-5">Detalles del paciente</h3>
         <div className="row">
           <div className="col-lg-4">
-              <p className="mb-0 bold color-primary">Nombre del cliente</p>
-              <p>{cliente.nombre} {cliente.apellido}</p>
+              <p className="mb-0 bold color-primary">Nombre del paciente</p>
+              <p>{paciente.nombre} {paciente.apellido}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Sexo</p>
-              <p>{cliente.genero}</p>
+              <p>{paciente.genero}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Dirección</p>
-              <p>{cliente.direccion}</p>
+              <p>{paciente.direccion}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Teléfono</p>
-              <p>{cliente.telefono}</p>
+              <p>{paciente.telefono}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Email</p>
-              <p>{cliente.email}</p>
+              <p>{paciente.email}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Afiliado</p>
-              <p>{clientePlan ? clientePlan.tipoPlan : "Cargando"}</p>
+              <p>{pacientePlan ? pacientePlan.tipoPlan : "Cargando"}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Puntos acumulados</p>
-              <p>{clientePlan ? clientePetPoints.ppAcumulados : "Cargando"}</p>
+              <p>{pacientePlan ? pacientePetPoints.ppAcumulados : "Cargando"}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Puntos canjeados</p>
-              <p>{clientePlan ? clientePetPoints.ppCanjeados : "Cargando"}</p>
+              <p>{pacientePlan ? pacientePetPoints.ppCanjeados : "Cargando"}</p>
           </div>
           <div className="col-lg-4">
               <p className="mb-0 bold color-primary">Puntos generados</p>
-              <p>{clientePlan ? clientePetPoints.ppGenerados : "Cargando"}</p>
+              <p>{pacientePlan ? pacientePetPoints.ppGenerados : "Cargando"}</p>
           </div>
         </div>
       </div>

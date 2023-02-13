@@ -12,6 +12,7 @@ function Register() {
 	const [telefono, setTelefono] = useState('')
 	const [identificacion, setIdentificacion] = useState('')
 	const [direccion, setDireccion] = useState('')
+	const [localidad, setLocalidad] = useState('')
   const [tiposDeAliados, setAliados] = useState([])
   const [error, setError] = useState(false)
   const tiposEmpresa = ["Jurídica", "Natural"]
@@ -32,23 +33,23 @@ function Register() {
     setFile(e.target.files[0]);
   }
   
-  function getAliados(){
-    let tipos = []
-    firebase.db.collection('TipoAliado').get().then(data=>{  
-      data.forEach(tipo=>{
-        tipos.push(tipo.id)
-        tipos.sort()
-      })
-      setAliados(tipos)
-    })
-    .catch(e=>{
-      console.error("Error TipoAliado:",e)
-    })
-  }
+  //function getAliados(){
+  //  let tipos = []
+  //  firebase.db.collection('TipoAliado').get().then(data=>{  
+  //    data.forEach(tipo=>{
+  //      tipos.push(tipo.id)
+  //      tipos.sort()
+  //    })
+  //    setAliados(tipos)
+  //  })
+  //  .catch(e=>{
+  //    console.error("Error TipoAliado:",e)
+  //  })
+  //}
 
-  useEffect(()=>{
-    getAliados();
-  },[]);
+  //useEffect(()=>{
+  //  getAliados();
+  //},[]);
 
   return (
     <main className="container">
@@ -66,7 +67,7 @@ function Register() {
         <form className="bg-white p-5 rounded mt-5 w-100" onSubmit={e => e.preventDefault() && false }>
             <div className="row mb-5">
               <div className="form-register-image mx-auto">
-                <img src="../images/logo.png" alt="MKS Salud Aliados Aliados" alt=""/>
+                <img src="../images/logo.png" alt="EMA Aliados"/>
               </div>
               <input type="file"
                 ref={hiddenFileInput}
@@ -108,9 +109,9 @@ function Register() {
                     </div>
                     <div className="form-group col-md-6">
                       <select className="form-control" value={tipoAliado} onChange={e => setTipoAliado(e.target.value)}>
-                        {tiposDeAliados.map(data => (
-                            <option key={data} value={data}>{data}</option>
-                        ))}
+                        <option value="">Seleccionar</option>
+                        <option value="Especialista">Especialista</option>
+                        <option value="Atencion">Atención</option>
                       </select>
                     </div>
                   </div>
@@ -126,6 +127,9 @@ function Register() {
                     <div className="form-group col-md-6">
                       <input type="text" className="form-control" onChange={(e) => setDireccion(e.target.value)} placeholder="Dirección" value={direccion} />
                     </div>
+                    <div className="form-group col-md-6">
+                      <input type="text" className="form-control" onChange={(e) => setLocalidad(e.target.value)} placeholder="Localidad" value={localidad} />
+                    </div>
                   </div>
           <button onClick={onRegister} className="btn btn-primary"> Registrate </button>
         </form>
@@ -134,62 +138,58 @@ function Register() {
     )
 
     async function onRegister() {
-        const userInfo = {
-            nombre: nombreCompleto,
-            nombreComercial: nombreComercial ?? nombreCompleto,
-            tipoEmpresa: tipoEmpresa, 
-            tipoAliado: tipoAliado, 
-            telefono: telefono,
-            identificacion: identificacion,
-            direccion: direccion,
-            role: "Administrador"
-        }
+      const userInfo = {
+        nombre: nombreCompleto,
+        nombreComercial: nombreComercial ?? nombreCompleto,
+        tipoEmpresa: tipoEmpresa, 
+        tipoAliado: tipoAliado, 
+        telefono: telefono,
+        identificacion: identificacion,
+        direccion: direccion,
+        localidad: localidad,
+        role: tipoAliado
+      }
 
-		try {
-      await firebase.register(email, password)
-      await firebase.storage.ref(`/Aliados imagenes/${file.name}`).put(file)
-      await firebase.storage.ref("Aliados imagenes").child(file.name).getDownloadURL().then((urlI) => {
-        firebase.addUser(email, userInfo, urlI).then((val)=>{
-          if(userInfo.tipoAliado === "Médico"){
-            window.location.href = "/register/doctor_register";
-          }else{
-            window.location.href = "/";
-          }
+      try {
+        await firebase.register(email, password)
+        await firebase.storage.ref(`/Aliados imagenes/${file.name}`).put(file)
+        await firebase.storage.ref("Aliados imagenes").child(file.name).getDownloadURL().then((urlI) => {
+          firebase.addUser(email, userInfo, urlI).then((val)=>{
+              window.location.href = "/";
+          })
         })
-      })
-		} catch(e) {
-      switch(e.message) { 
-				case "The email address is badly formatted.":
-					setError(true)
-					setEmessage("Debes ingresar un email correcto");
-				break;
-				case "There is no user record corresponding to this identifier. The user may have been deleted.":
-					setError(true)
-					setEmessage( "El usuario no existe");
-				break;
-				case "The password is invalid or the user does not have a password.":
-					setError(true)
-					setEmessage("Contraseña incorrecta. Intenta ingresar la correcta");
-				break;
-				case "The email address is already in use by another account.":
-					setError(true)
-					setEmessage("Tu cuenta ya está registrada con nosotros, si deseas hacer algún cambio o una compra descarga nuestra aplicación.");
-					
-				break;
-				case "Password should be at least 6 characters":
-					setError(true)
-					setEmessage("La contraseña debe ser mayor a 5 caracteres");
-					
-				break;
-				default:
-					setError(true)
-					setEmessage(e.message);
-		
-				break; 
-			}
-			// alert(error.message)
-		}
-	}
+      } catch(e) {
+        switch(e.message) { 
+          case "The email address is badly formatted.":
+            setError(true)
+            setEmessage("Debes ingresar un email correcto");
+          break;
+          case "There is no user record corresponding to this identifier. The user may have been deleted.":
+            setError(true)
+            setEmessage( "El usuario no existe");
+          break;
+          case "The password is invalid or the user does not have a password.":
+            setError(true)
+            setEmessage("Contraseña incorrecta. Intenta ingresar la correcta");
+          break;
+          case "The email address is already in use by another account.":
+            setError(true)
+            setEmessage("Tu cuenta ya está registrada con nosotros.");
+            
+          break;
+          case "Password should be at least 6 characters":
+            setError(true)
+            setEmessage("La contraseña debe ser mayor a 5 caracteres");
+            
+          break;
+          default:
+            setError(true)
+            setEmessage(e.message);
+      
+          break; 
+        }
+      }
+    }
 
 }
 

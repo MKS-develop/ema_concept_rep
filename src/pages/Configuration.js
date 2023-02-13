@@ -5,9 +5,15 @@ import firebase from '../firebase/config'
 
 function Configuration() {
   const [user, setUser] = useState({})
+  const [role, setRol] = useState({})
 
   useEffect(() => {
-    firebase.getCurrentUser().then(setUser);
+    firebase.getCurrentUser().then((val)=>{
+      setUser(val)
+      firebase.getRoleInfo(val.role ?? "Atencion").then((r)=>{
+        setRol(r)
+      })
+    });
 	}, [])
 
     return (
@@ -44,20 +50,6 @@ function Configuration() {
                 </Link>
               </div>
               <div className="col-md-4 col-sm-12 mb-4">
-                <Link className="card" to="/configuration/products">
-                  <div className="card-body">
-                    <div className="row align-items-center">
-                      <div className="col-md-4 col-sm-12 card-config-img">
-                        <img src="../images/icons/productos.svg" alt="" width="60" height="60"/>
-                      </div>
-                      <div className="col-md-8 col-sm-12">
-                        <p className="card-config-p mb-0">Productos</p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-              <div className="col-md-4 col-sm-12 mb-4">
                 <Link className="card" to="/configuration/localitys">
                   <div className="card-body">
                     <div className="row align-items-center">
@@ -85,7 +77,7 @@ function Configuration() {
                   </div>
                 </Link>
               </div>
-              {user.role === "Administrador" ? <div className="col-md-4 col-sm-12 mb-4">
+              { user.role === "CallCenter" && <div className="col-md-4 col-sm-12 mb-4">
                 <Link className="card" to="/employes">
                   <div className="card-body">
                     <div className="row align-items-center">
@@ -98,24 +90,7 @@ function Configuration() {
                     </div>
                   </div>
                 </Link>
-              </div> : <div></div>}
-              {user.tipoAliado === "Médico" ?
-              <div className="col-md-4 col-sm-12 mb-4">
-                <Link className="card" to="/configuration/specialitys">
-                  <div className="card-body">
-                    <div className="row align-items-center">
-                      <div className="col-md-4 col-sm-12 card-config-img">
-                        <img src="../images/icons/especialidades.svg" alt="" width="60" height="60"/>
-                      </div>
-                      <div className="col-md-8 col-sm-12">
-                        <p className="card-config-p mb-0">Especialidades</p>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </div>
-              : <div></div>
-              }
+              </div>}
             </div>
 
           </div>

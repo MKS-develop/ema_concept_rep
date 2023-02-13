@@ -4,6 +4,7 @@ import React, {useState, useEffect} from 'react'
 import firebase from '../firebase/config'
 import { Line } from '@reactchartjs/react-chart.js'
 import {Link} from 'react-router-dom';
+import AgendaConfig from './AgendaConfig';
 
 function Home() {
   const [user, setUser] = useState({})
@@ -360,11 +361,81 @@ function Home() {
     },
   }  
 
+  async function updateAgendas(aliadoId){
+
+    try{
+      await firebase.db.collection("Localidades").where("aliadoId", "==", aliadoId).where("lc", "==", "Localidad Principal").get().then((loc)=>{
+        let lid = loc.docs[0].data().localidadId
+        
+        firebase.db.collection("Localidades").doc(lid).collection("Servicios").get().then((servs)=>{
+          servs.docs.forEach((serv)=>{
+            firebase.db.collection("Localidades").doc(lid).collection("Servicios").doc(serv.data().servicioId).collection("Agenda").orderBy("date", "asc").get().then((days)=>{
+              
+              let spreadedData = days.docs[days.docs.length - 1] ? {...days.docs[days.docs.length - 1].data()} : {}
+              
+              let object = {
+                localidadId: lid,
+                ...spreadedData
+              }
+
+              let fecha = object.fecha ? object.fecha : ""
+              let dateFormatted
+              
+              let listaText = fecha.split(" ")
+
+              if( isNaN(parseInt( listaText[1] )) ){
+                let newFecha = `${listaText[0]} ${listaText[2]} ${listaText[1]} ${listaText[3]}`
+                dateFormatted = moment(newFecha, "ddd, D MMM YYYY")
+              }else{
+                let newFecha = `${listaText[0]} ${listaText[1]} ${listaText[2]} ${listaText[3]}`
+                dateFormatted = moment(newFecha, "ddd, D MMM YYYY")
+              }
+              // console.log(dateFormatted)
+              if(dateFormatted.isBefore(moment())){
+                console.log("Si se tiene que actualizar: " )
+                console.log(object)
+                const dates = AgendaConfig.getDates()
+                createNewUpgradedAgenda(dates, object, dateFormatted)
+                // console.log(dates)
+
+              }else{
+                // console.log("No se tiene que actualizar: " )
+                // console.log(object)
+              }
+
+            })
+          })
+        })
+
+      })
+    }catch(e){
+      console.log("Error: ", e)
+    }
+
+
+  }
+
+  async function createNewUpgradedAgenda(fechas, objeto, date){
+    
+    for(let i = 0; i < fechas.length; i++){
+      let fecha = fechas[i]
+      await firebase.db.collection("Localidades").doc(objeto.localidadId).collection('Servicios').doc(objeto.servicioId).collection("Agenda").doc(fecha).set({
+        bloqueado: false,
+        agendaId: firebase.db.collection("Localidades").doc(objeto.localidadId).collection('Servicios').doc(objeto.servicioId).collection("Agenda").doc().id,
+        servicioId: objeto.servicioId,
+        fecha: fecha,
+        date: date.toDate(),
+        horasDia: objeto.horasDia, 
+        capacidadDia: objeto.capacidadDia,
+        createdOn: moment().toDate(),
+      });
+    }
+
+  }
+
   useEffect(() => {
     firebase.getCurrentUser().then((val)=>{
       setUser(val)
-      getOrders(val.aliadoId)
-      getPS(val.aliadoId)
     });
 	}, [])
 
@@ -429,7 +500,7 @@ function Home() {
               <div className="col-lg-8 col-md-12 col-sm-12 mb-4">
                 <div className="card card-small">
                   <div className="card-header border-bottom">
-                    <h6 className="m-0">Clientes</h6>
+                    <h6 className="m-0">Pacientes</h6>
                   </div>
                   <div className="card-body pt-0">
                     <Line data={data} options={options} />

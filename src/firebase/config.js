@@ -9,20 +9,22 @@ import { getFirebaseApp } from './firebaseApp';
 var firebaseConfig = {}
 
 firebaseConfig = {
-  apiKey: "AIzaSyD_FidjHLNJa3n2jvTqFt2V9_Kdvkc5qKg",
-  authDomain: "mkss-9b4e0.firebaseapp.com",
-  projectId: "mkss-9b4e0",
-  storageBucket: "mkss-9b4e0.appspot.com",
-  messagingSenderId: "1027897425378",
-  appId: "1:1027897425378:web:a65aa617b67ef099eb8dbb",
-  measurementId: "G-1NTTQ4W2TE"
+  apiKey: "AIzaSyDdx-OuI2xsOXP_jA9VYRDibPK6aEFxwWA",
+  authDomain: "ema-dev-2fe4b.firebaseapp.com",
+  projectId: "ema-dev-2fe4b",
+  storageBucket: "ema-dev-2fe4b.appspot.com",
+  messagingSenderId: "523189819320",
+  appId: "1:523189819320:web:64dd19807351c71967e14d",
+  measurementId: "G-WY5PKK9DNZ"
 };
+
 console.log('Estamos en Desarrollo')
 
 class Firebase {
 
     constructor(){
         firebase.initializeApp(firebaseConfig);
+        firebase.firestore().settings({experimentalForceLongPolling: true});
         this.auth = firebase.auth();
         this.db = firebase.firestore();
         this.storage = firebase.storage();
@@ -53,8 +55,11 @@ class Firebase {
         nombreComercial: userInfo.nombreComercial ?? userInfo.nombre,
         tipoEmpresa: userInfo.tipoEmpresa, 
         tipoAliado: userInfo.tipoAliado, 
-        pais: "Colombia",
+        pais: "México",
+        countRatings: 0,
+        totalRatings: 0,
         telefono: userInfo.telefono,
+        masterId: this.auth.currentUser.uid,
         identificacion: userInfo.identificacion,
         direccion: userInfo.direccion,
         avatar: url,
@@ -66,23 +71,15 @@ class Firebase {
         aliadoId: this.auth.currentUser.uid,
         serviciosContiene: false,
         localidadId: localidadId,
-        nombreLocalidad: "Localidad Principal",
+        nombreLocalidad: userInfo.localidad,
         locacionImg: url,
-        ciudad: userInfo.direccion,
-        pais: "Colombia",
+        ciudad: userInfo.localidad,
+        pais: "México",
         lc: "Localidad Principal",
         direccionDetallada: userInfo.direccion,
-        direccionLocalidad: userInfo.direccion,
+        direccionLocalidad: userInfo.localidad,
         telefono: userInfo.telefono,
         otroTelefono: userInfo.telefono,
-        createdOn: moment().toDate(),
-      })
-        
-      this.db.collection("Aliados").doc(this.auth.currentUser.uid).collection("Petpoints")
-      .doc(this.auth.currentUser.uid).set({
-        aliadoId: this.auth.currentUser.uid,
-        ppAcumulados: 500,
-        ppCanjeados: 0,
         createdOn: moment().toDate(),
       })
     })
@@ -104,7 +101,8 @@ class Firebase {
         nombreComercial: userInfo.nombreComercial ?? userInfo.nombre,
         tipoEmpresa: userInfo.tipoEmpresa,
         tipoAliado: userInfo.tipoAliado,
-        pais: "Colombia",
+        masterId: this.auth.currentUser.uid,
+        pais: "México",
         telefono: userInfo.telefono,
         identificacion: userInfo.identificacion,
         direccion: userInfo.direccion,
@@ -121,6 +119,76 @@ class Firebase {
     } catch (error) {
       return alert(error);
     }
+  }
+
+  async createClient(aliadoId, clientes, email, password, userInfo, url, data){
+
+    let authInstance = getFirebaseApp('auth-worker');
+    let authInstanceWorker = firebase.auth(authInstance);
+    authInstanceWorker.setPersistence(firebase.auth.Auth.Persistence.NONE);
+  
+    try {
+      const uid = await (await authInstanceWorker.createUserWithEmailAndPassword(email, password)).user.uid;
+      this.db.collection("Dueños").doc(uid).set({
+        uid: uid,
+        email: email,
+        identificacion: data["identificacion"],
+        edad: data["edad"],
+        telefono: data["telefono"],
+        user: userInfo,
+        dadsLastName: data["dadsLastName"],
+        momsLastName: data["momsLastName"],
+        codPostal: data["codPostal"],
+        url: url,
+        password: password,
+        direccion: data["direccion"],
+        bienvenida: true,
+        walkin: true,
+        // token: token,
+        registroCompleto: false,
+      })
+      this.db.collection("Aliados").doc(aliadoId).collection("Clients").doc(uid).set({
+        uid: uid,
+        email: email,
+        identificacion: data["identificacion"],
+        edad: data["edad"],
+        telefono: data["telefono"],
+        user: userInfo,
+        dadsLastName: data["dadsLastName"],
+        momsLastName: data["momsLastName"],
+        url: url,
+        walkin: true,
+      })
+      return uid
+    } catch (error) {
+      return "error";
+    }
+  }
+
+  async getCountryInfo(pais){
+    let data = await this.db.collection("Ciudades").doc(pais).get()
+    return data
+  }
+
+  async getRoleInfo(rol){
+    let list = []
+    let dataDefault = {
+      canMakeReserves: false,
+      canAccessAgenda: false,
+      canViewClients: false,
+      canChargeFile: false,
+      canViewAllCenters: false,
+      canFilterByStatus: false
+    }
+    await this.db.collection("Roles").get().then((v)=>{
+      v.docs.forEach((d)=>{
+        list.push(d.data())
+      })
+    })
+
+    let data = list.filter((prv)=>( prv["roleId"] === rol ))
+    
+    return data[0]
   }
 
   //Salir de la sesión
